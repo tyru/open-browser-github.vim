@@ -17,10 +17,10 @@ endfunction
 function! openbrowser#github#file(args) range
     let file = expand(empty(a:args) ? '%' : a:args[0])
     let gitdir = s:lookup_gitdir(file)
-    call s:call_with_temp_dir(gitdir, 's:cmd_file', [a:args])
+    call s:call_with_temp_dir(gitdir, 's:cmd_file', [a:args, a:firstline, a:lastline])
 endfunction
 
-function! s:cmd_file(args)
+function! s:cmd_file(args, firstlnum, lastlnum)
     let file = expand(empty(a:args) ? '%' : a:args[0])
     if !filereadable(file)
         if a:0 is 0
@@ -35,10 +35,10 @@ function! s:cmd_file(args)
     let repos   = s:get_github_repos_name()
     let branch  = s:get_repos_branch()
     let relpath = s:get_repos_relpath(file)
-    let rangegiven = a:firstline isnot 1 || a:lastline isnot line('$')
+    let rangegiven = a:firstlnum isnot 1 || a:lastlnum isnot line('$')
     if rangegiven
-        let lnum  = '#L'.a:firstline
-        \          .(a:firstline is a:lastline ? '' : '-L'.a:lastline)
+        let lnum  = '#L'.a:firstlnum
+        \          .(a:firstlnum is a:lastlnum ? '' : '-L'.a:lastlnum)
     else
         let lnum = ''
     endif
