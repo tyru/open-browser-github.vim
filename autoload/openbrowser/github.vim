@@ -121,9 +121,7 @@ function! s:get_repos_relpath(file)
     if s:is_relpath(a:file)
         let dir = s:git('rev-parse', '--show-prefix')
         let dir = dir !=# '' ? dir.'/' : ''
-        if filereadable(dir.a:file)
-            let relpath = dir.a:file
-        endif
+        let relpath = substitute(dir.a:file, '/\{2,}', '/', 'g')
     else
         " TODO
         call s:error('absolute path is not supported yet. -> '.a:file)
