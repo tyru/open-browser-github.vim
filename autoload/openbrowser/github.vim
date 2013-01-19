@@ -11,7 +11,7 @@ function! openbrowser#github#load()
     " dummy function to load this script.
 endfunction
 
-function! openbrowser#github#file(args)
+function! openbrowser#github#file(args) range
     let file = expand(empty(a:args) ? '%' : a:args[0])
     if !filereadable(file)
         if a:0 is 0
@@ -26,6 +26,13 @@ function! openbrowser#github#file(args)
     let repos   = s:get_github_repos_name()
     let branch  = s:get_repos_branch()
     let relpath = s:get_repos_relpath(file)
+    let rangegiven = a:firstline isnot 1 || a:lastline isnot line('$')
+    if rangegiven
+        let lnum  = '#L'.a:firstline
+        \          .(a:firstline is a:lastline ? '' : '-L'.a:lastline)
+    else
+        let lnum = ''
+    endif
 
     if user ==# ''
         call s:error('github.user is not set.')
@@ -46,7 +53,7 @@ function! openbrowser#github#file(args)
     endif
 
     call s:open_github_url(
-    \   '/'.user.'/'.repos.'/blob/'.branch.'/'.relpath)
+    \   '/'.user.'/'.repos.'/blob/'.branch.'/'.relpath.lnum)
 endfunction
 
 function! openbrowser#github#issue(args)
