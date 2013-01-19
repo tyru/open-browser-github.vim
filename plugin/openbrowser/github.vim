@@ -29,6 +29,11 @@ command! -bar -nargs=+
 \   OpenGithubIssue
 \   call openbrowser#github#issue([<f-args>])
 
+" GitHub redirects /issues/1 to /pull/1 if #1 is pull req.
+command! -bar -nargs=+
+\   OpenGithubPullReq
+\   OpenGithubIssue <args>
+
 
 " Restore 'cpoptions' {{{
 let &cpo = s:save_cpo
