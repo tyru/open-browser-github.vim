@@ -16,6 +16,12 @@ endfunction
 
 function! openbrowser#github#file(args) range
     let file = expand(empty(a:args) ? '%' : a:args[0])
+    let gitdir = s:lookup_gitdir(file)
+    call s:call_with_temp_dir(gitdir, 's:cmd_file', [a:args])
+endfunction
+
+function! s:cmd_file(args)
+    let file = expand(empty(a:args) ? '%' : a:args[0])
     if !filereadable(file)
         if a:0 is 0
             call s:error("current buffer is not a file.")
@@ -60,6 +66,12 @@ function! openbrowser#github#file(args) range
 endfunction
 
 function! openbrowser#github#issue(args)
+    let file = expand('%')
+    let gitdir = s:lookup_gitdir(file)
+    call s:call_with_temp_dir(gitdir, 's:cmd_issue', [a:args])
+endfunction
+
+function! s:cmd_issue(args)
     " '#1' and '1' are supported.
     let number = matchstr(a:args[0], '^#\?\zs\d\+\ze$')
     if number ==# ''
@@ -85,6 +97,21 @@ function! openbrowser#github#issue(args)
 endfunction
 
 
+
+function! s:call_with_temp_dir(dir, funcname, args)
+    let haslocaldir = haslocaldir()
+    let cwd = getcwd()
+    if a:dir !=# '' && a:dir !=# cwd
+        execute 'lcd' a:dir
+    endif
+    try
+        return call(a:funcname, a:args)
+    finally
+        if a:dir !=# cwd
+            execute (haslocaldir ? 'lcd' : 'cd') cwd
+        endif
+    endtry
+endfunction
 
 function! s:get_github_user()
     return s:git('config', '--get', 'github.user')
@@ -133,22 +160,32 @@ function! s:get_repos_relpath(file)
     return relpath
 endfunction
 
-function! s:lookup_relpath_from_gitdir(dir, ...)
+function! s:lookup_relpath_from_gitdir(path)
+    return get(s:split_repos_path(a:path), 1, '')
+endfunction
+
+function! s:lookup_gitdir(path)
+    return get(s:split_repos_path(a:path), 0, '')
+endfunction
+
+" Returns [gitdir, relative path] when git dir is found.
+" Otherwise, returns empty List.
+function! s:split_repos_path(dir, ...)
     let parent = s:Filepath.dirname(a:dir)
     let basename = s:Filepath.basename(a:dir)
     let removed_path = a:0 ? a:1 : ''
     if a:dir ==# parent
         " a:dir is root directory. not found.
-        return ''
+        return []
     elseif s:is_git_dir(a:dir)
-        return removed_path
+        return [a:dir, removed_path]
     else
         if removed_path ==# ''
             let removed_path = basename
         else
             let removed_path = s:Filepath.join(basename, removed_path)
         endif
-        return s:lookup_relpath_from_gitdir(parent, removed_path)
+        return s:split_repos_path(parent, removed_path)
     endif
 endfunction
 
