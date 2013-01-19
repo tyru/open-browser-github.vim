@@ -25,7 +25,7 @@ command! -range=% -bar -nargs=* -complete=file
 \   OpenGithubFile
 \   <line1>,<line2>call openbrowser#github#file([<f-args>])
 
-command! -bar -nargs=*
+command! -bar -nargs=+
 \   OpenGithubIssue
 \   call openbrowser#github#issue([<f-args>])
 

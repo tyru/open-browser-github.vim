@@ -57,6 +57,28 @@ function! openbrowser#github#file(args) range
 endfunction
 
 function! openbrowser#github#issue(args)
+    " '#1' and '1' are supported.
+    let number = matchstr(a:args[0], '^#\?\zs\d\+\ze$')
+    if number ==# ''
+        call s:error("'".a:args[0]."' does not appear to be an issue number.")
+        return
+    endif
+
+    let user  = s:get_github_user()
+    let repos = s:get_github_repos_name()
+
+    if user ==# ''
+        call s:error('github.user is not set.')
+        call s:error("Please set by 'git config github.user yourname'.")
+        return
+    endif
+    if repos ==# ''
+        call s:error('Could not detect current repos name on github.')
+        return
+    endif
+
+    call s:open_github_url(
+    \   '/'.user.'/'.repos.'/issues/'.number)
 endfunction
 
 
