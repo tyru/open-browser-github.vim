@@ -6,6 +6,9 @@ let s:save_cpo = &cpo
 set cpo&vim
 " }}}
 
+let s:V = vital#of('open-browser-github.vim')
+let s:Filepath = s:V.import('System.Filepath')
+
 
 function! openbrowser#github#load()
     " dummy function to load this script.
@@ -123,12 +126,36 @@ function! s:get_repos_relpath(file)
         let dir = dir !=# '' ? dir.'/' : ''
         let relpath = dir.a:file
     else
-        " TODO
-        call s:error('absolute path is not supported yet. -> '.a:file)
+        let relpath = s:lookup_relpath_from_gitdir(a:file)
     endif
     let relpath = substitute(relpath, '\', '/', 'g')
     let relpath = substitute(relpath, '/\{2,}', '/', 'g')
     return relpath
+endfunction
+
+function! s:lookup_relpath_from_gitdir(dir, ...)
+    let parent = s:Filepath.dirname(a:dir)
+    let basename = s:Filepath.basename(a:dir)
+    let removed_path = a:0 ? a:1 : ''
+    if a:dir ==# parent
+        " a:dir is root directory. not found.
+        return ''
+    elseif s:is_git_dir(a:dir)
+        return removed_path
+    else
+        if removed_path ==# ''
+            let removed_path = basename
+        else
+            let removed_path = s:Filepath.join(basename, removed_path)
+        endif
+        return s:lookup_relpath_from_gitdir(parent, removed_path)
+    endif
+endfunction
+
+function! s:is_git_dir(dir)
+    " .git may be a file when its repository is a submodule.
+    let dotgit = s:Filepath.join(a:dir, '.git')
+    return isdirectory(dotgit) || filereadable(dotgit)
 endfunction
 
 function! s:is_relpath(path)
