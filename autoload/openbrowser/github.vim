@@ -8,6 +8,7 @@ set cpo&vim
 
 let s:V = vital#of('open-browser-github.vim')
 let s:Filepath = s:V.import('System.Filepath')
+let s:List = s:V.import('Data.List')
 
 
 function! openbrowser#github#load()
@@ -145,6 +146,7 @@ endfunction
 
 function! s:detect_github_repos_from_git_remote()
     let github_urls = s:parse_github_remote_url()
+    let github_urls = s:List.uniq(github_urls, 'v:val.user."/".v:val.repos')
     let NONE = {}
     if len(github_urls) ==# 0
         return NONE
