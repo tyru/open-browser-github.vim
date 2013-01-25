@@ -33,7 +33,13 @@ function! s:cmd_file(args, firstlnum, lastlnum)
     endif
 
     let github_host  = s:get_github_host()
-    let github_repos = s:detect_github_repos_from_git_remote(github_host)
+    try
+        let github_repos =
+        \   s:detect_github_repos_from_git_remote(github_host)
+    catch /^INVALID INDEX$/
+        call s:error('invalid GitHub URL was selected.')
+        return
+    endtry
     let user    = get(github_repos, 'user', '')
     let repos   = get(github_repos, 'repos', '')
     let branch  = s:get_repos_branch()
@@ -89,7 +95,13 @@ function! s:cmd_issue(args)
         let user  = mlist[1]
         let repos = mlist[2]
     else
-        let github_repos = s:detect_github_repos_from_git_remote(github_host)
+        try
+            let github_repos =
+            \   s:detect_github_repos_from_git_remote(github_host)
+        catch /^INVALID INDEX$/
+            call s:error('invalid GitHub URL was selected.')
+            return
+        endtry
         let user         = get(github_repos, 'user', '')
         let repos        = get(github_repos, 'repos', '')
     endif
@@ -170,7 +182,7 @@ function! s:detect_github_repos_from_git_remote(github_host)
         if 1 <=# index && index <=# len(github_urls)
             return github_urls[index-1]
         else
-            return NONE
+            throw 'INVALID INDEX'
         endif
     endif
 endfunction
