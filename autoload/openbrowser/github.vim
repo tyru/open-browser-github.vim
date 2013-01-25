@@ -31,29 +31,9 @@ function! s:cmd_file(args, firstlnum, lastlnum)
         return
     endif
 
-    let github_urls = s:parse_github_remote_url()
-    if len(github_urls) ==# 0
-        let user  = ''
-        let repos = ''
-    elseif len(github_urls) ==# 1
-        let user  = github_urls[0].user
-        let repos = github_urls[0].repos
-    else
-        " Prompt which GitHub URL.
-        let list = ['Which GitHub repository?']
-        for i in range(len(github_urls))
-            call add(list, (i+1).'. '.github_urls[i].line)
-        endfor
-        let index = inputlist(list)
-        if 1 <=# index && index <=# len(github_urls)
-            let choice = github_urls[index-1]
-            let user   = choice.user
-            let repos  = choice.repos
-        else
-            let user   = ''
-            let repos  = ''
-        endif
-    endif
+    let github_repos = s:detect_github_repos_from_git_remote()
+    let user    = get(github_repos, 'user', '')
+    let repos   = get(github_repos, 'repos', '')
     let branch  = s:get_repos_branch()
     let relpath = s:get_repos_relpath(file)
     let rangegiven = a:firstlnum isnot 1 || a:lastlnum isnot line('$')
@@ -105,29 +85,9 @@ function! s:cmd_issue(args)
         let user  = mlist[1]
         let repos = mlist[2]
     else
-        let github_urls = s:parse_github_remote_url()
-        if len(github_urls) ==# 0
-            let user  = ''
-            let repos = ''
-        elseif len(github_urls) ==# 1
-            let user  = github_urls[0].user
-            let repos = github_urls[0].repos
-        else
-            " Prompt which GitHub URL.
-            let list = ['Which GitHub repository?']
-            for i in range(len(github_urls))
-                call add(list, (i+1).'. '.github_urls[i].line)
-            endfor
-            let index = inputlist(list)
-            if 1 <=# index && index <=# len(github_urls)
-                let choice = github_urls[index-1]
-                let user   = choice.user
-                let repos  = choice.repos
-            else
-                let user   = ''
-                let repos  = ''
-            endif
-        endif
+        let github_repos = s:detect_github_repos_from_git_remote()
+        let user         = get(github_repos, 'user', '')
+        let repos        = get(github_repos, 'repos', '')
     endif
 
     if user ==# ''
@@ -181,6 +141,28 @@ function! s:parse_github_remote_url()
         endfor
     endfor
     return matched
+endfunction
+
+function! s:detect_github_repos_from_git_remote()
+    let github_urls = s:parse_github_remote_url()
+    let NONE = {}
+    if len(github_urls) ==# 0
+        return NONE
+    elseif len(github_urls) ==# 1
+        return github_urls[0]
+    else
+        " Prompt which GitHub URL.
+        let list = ['Which GitHub repository?']
+        for i in range(len(github_urls))
+            call add(list, (i+1).'. '.github_urls[i].line)
+        endfor
+        let index = inputlist(list)
+        if 1 <=# index && index <=# len(github_urls)
+            return github_urls[index-1]
+        else
+            return NONE
+        endif
+    endif
 endfunction
 
 function! s:get_repos_branch()
