@@ -32,7 +32,8 @@ function! s:cmd_file(args, firstlnum, lastlnum)
         return
     endif
 
-    let github_repos = s:detect_github_repos_from_git_remote()
+    let github_host  = s:get_github_host()
+    let github_repos = s:detect_github_repos_from_git_remote(github_host)
     let user    = get(github_repos, 'user', '')
     let repos   = get(github_repos, 'repos', '')
     let branch  = s:get_repos_branch()
@@ -86,7 +87,8 @@ function! s:cmd_issue(args)
         let user  = mlist[1]
         let repos = mlist[2]
     else
-        let github_repos = s:detect_github_repos_from_git_remote()
+        let github_host  = s:get_github_host()
+        let github_repos = s:detect_github_repos_from_git_remote(github_host)
         let user         = get(github_repos, 'user', '')
         let repos        = get(github_repos, 'repos', '')
     endif
@@ -134,7 +136,6 @@ function! s:parse_github_remote_url()
             let m = matchlist(line, re)
             if !empty(m)
                 call add(matched, {
-                \   'line': line,
                 \   'user': m[1],
                 \   'repos': substitute(m[2], '\.git$', '', ''),
                 \})
@@ -144,7 +145,7 @@ function! s:parse_github_remote_url()
     return matched
 endfunction
 
-function! s:detect_github_repos_from_git_remote()
+function! s:detect_github_repos_from_git_remote(github_host)
     let github_urls = s:parse_github_remote_url()
     let github_urls = s:List.uniq(github_urls, 'v:val.user."/".v:val.repos')
     let NONE = {}
@@ -154,9 +155,14 @@ function! s:detect_github_repos_from_git_remote()
         return github_urls[0]
     else
         " Prompt which GitHub URL.
+        let GITHUB_URL_FORMAT = 'http://%s/%s/%s'
         let list = ['Which GitHub repository?']
         for i in range(len(github_urls))
-            call add(list, (i+1).'. '.github_urls[i].line)
+            let url = printf(GITHUB_URL_FORMAT,
+            \                a:github_host,
+            \                github_urls[i].user,
+            \                github_urls[i].repos)
+            call add(list, (i+1).'. '.url)
         endfor
         let index = inputlist(list)
         if 1 <=# index && index <=# len(github_urls)
