@@ -37,7 +37,7 @@ function! s:cmd_file(args, firstlnum, lastlnum)
         let github_repos =
         \   s:detect_github_repos_from_git_remote(github_host)
     catch /^INVALID INDEX$/
-        call s:error('invalid GitHub URL was selected.')
+        call s:error('canceled or invalid GitHub URL was selected.')
         return
     endtry
     let user    = get(github_repos, 'user', '')
@@ -99,7 +99,7 @@ function! s:cmd_issue(args)
             let github_repos =
             \   s:detect_github_repos_from_git_remote(github_host)
         catch /^INVALID INDEX$/
-            call s:error('invalid GitHub URL was selected.')
+            call s:error('canceled or invalid GitHub URL was selected.')
             return
         endtry
         let user         = get(github_repos, 'user', '')
