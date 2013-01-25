@@ -64,6 +64,7 @@ function! s:cmd_file(args, firstlnum, lastlnum)
     endif
 
     call s:open_github_url(
+    \   github_host,
     \   '/'.user.'/'.repos.'/blob/'.branch.'/'.relpath.lnum)
 endfunction
 
@@ -81,13 +82,13 @@ function! s:cmd_issue(args)
         return
     endif
 
+    let github_host = s:get_github_host()
     let mlist = matchlist(get(a:args, 1, ''),
     \                     '^\([^/]\+\)/\([^/]\+\)$')
     if !empty(mlist)
         let user  = mlist[1]
         let repos = mlist[2]
     else
-        let github_host  = s:get_github_host()
         let github_repos = s:detect_github_repos_from_git_remote(github_host)
         let user         = get(github_repos, 'user', '')
         let repos        = get(github_repos, 'repos', '')
@@ -103,6 +104,7 @@ function! s:cmd_issue(args)
     endif
 
     call s:open_github_url(
+    \   github_host,
     \   '/'.user.'/'.repos.'/issues/'.number)
 endfunction
 
@@ -123,11 +125,9 @@ function! s:call_with_temp_dir(dir, funcname, args)
     endtry
 endfunction
 
-function! s:parse_github_remote_url()
-    " TODO: pass github host by argument.
+function! s:parse_github_remote_url(github_host)
     " TODO: even if host is not 'github.com', parse also 'github.com'.
-    let host = s:get_github_host()
-    let host_re = substitute(host, '\.', '\.', 'g')
+    let host_re = substitute(a:github_host, '\.', '\.', 'g')
     let ssh_re = 'git@'.host_re.':\([^/]\+\)/\([^/]\+\)\s'
     let git_re = 'git://'.host_re.'/\([^/]\+\)/\([^/]\+\)\s'
     let https_re = 'https\?://'.host_re.'/\([^/]\+\)/\([^/]\+\)\s'
@@ -148,7 +148,7 @@ function! s:parse_github_remote_url()
 endfunction
 
 function! s:detect_github_repos_from_git_remote(github_host)
-    let github_urls = s:parse_github_remote_url()
+    let github_urls = s:parse_github_remote_url(a:github_host)
     let github_urls = s:List.uniq(github_urls, 'v:val.user."/".v:val.repos')
     let NONE = {}
     if len(github_urls) ==# 0
@@ -239,8 +239,8 @@ function! s:is_relpath(path)
     return a:path !=# '' && a:path[0] !=# '/'
 endfunction
 
-function! s:open_github_url(path)
-    let endpoint = 'http://'.s:get_github_host()
+function! s:open_github_url(github_host, path)
+    let endpoint = 'http://'.a:github_host
     return openbrowser#open(endpoint.a:path)
 endfunction
 
