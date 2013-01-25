@@ -121,6 +121,8 @@ function! s:call_with_temp_dir(dir, funcname, args)
 endfunction
 
 function! s:parse_github_remote_url()
+    " TODO: pass github host by argument.
+    " TODO: even if host is not 'github.com', parse also 'github.com'.
     let host = s:get_github_host()
     let host_re = substitute(host, '\.', '\.', 'g')
     let ssh_re = 'git@'.host_re.':\([^/]\+\)/\([^/]\+\)\s'
