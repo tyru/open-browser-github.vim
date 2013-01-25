@@ -79,8 +79,15 @@ function! s:cmd_issue(args)
         return
     endif
 
-    let user  = s:get_github_user()
-    let repos = s:get_github_repos_name()
+    let mlist = matchlist(get(a:args, 1, ''),
+    \                     '^\([^/]\+\)/\([^/]\+\)$')
+    if !empty(mlist)
+        let user  = mlist[1]
+        let repos = mlist[2]
+    else
+        let user  = s:get_github_user()
+        let repos = s:get_github_repos_name()
+    endif
 
     if user ==# ''
         call s:error('github.user is not set.')
