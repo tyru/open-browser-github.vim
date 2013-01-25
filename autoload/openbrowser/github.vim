@@ -138,15 +138,28 @@ function! s:call_with_temp_dir(dir, funcname, args)
 endfunction
 
 function! s:parse_github_remote_url(github_host)
-    " TODO: even if host is not 'github.com', parse also 'github.com'.
     let host_re = substitute(a:github_host, '\.', '\.', 'g')
-    let ssh_re = 'git@'.host_re.':\([^/]\+\)/\([^/]\+\)\s'
-    let git_re = 'git://'.host_re.'/\([^/]\+\)/\([^/]\+\)\s'
-    let https_re = 'https\?://'.host_re.'/\([^/]\+\)/\([^/]\+\)\s'
+    let gh_host_re = 'github\.com'
+
+    let ssh_re_fmt = 'git@%s:\([^/]\+\)/\([^/]\+\)\s'
+    let git_re_fmt = 'git://%s/\([^/]\+\)/\([^/]\+\)\s'
+    let https_re_fmt = 'https\?://%s/\([^/]\+\)/\([^/]\+\)\s'
+
+    let ssh_re = printf(ssh_re_fmt, host_re)
+    let git_re = printf(git_re_fmt, host_re)
+    let https_re = printf(https_re_fmt, host_re)
+
+    let gh_ssh_re = printf(ssh_re_fmt, gh_host_re)
+    let gh_git_re = printf(git_re_fmt, gh_host_re)
+    let gh_https_re = printf(https_re_fmt, gh_host_re)
 
     let matched = []
     for line in s:git_lines('remote', '-v')
-        for re in [ssh_re, git_re, https_re]
+        " Even if host is not 'github.com',
+        " parse also 'github.com'.
+        for re in [ssh_re, git_re, https_re] +
+        \   (a:github_host !=# 'github.com' ?
+        \       [gh_ssh_re, gh_git_re, gh_https_re] : [])
             let m = matchlist(line, re)
             if !empty(m)
                 call add(matched, {
