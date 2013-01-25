@@ -31,8 +31,9 @@ function! s:cmd_file(args, firstlnum, lastlnum)
         return
     endif
 
-    let user    = s:get_github_user()
-    let repos   = s:get_github_repos_name()
+    let result  = s:parse_github_remote_url()
+    let user    = get(result, 'user', '')
+    let repos   = get(result, 'repos', '')
     let branch  = s:get_repos_branch()
     let relpath = s:get_repos_relpath(file)
     let rangegiven = a:firstlnum isnot 1 || a:lastlnum isnot line('$')
@@ -44,8 +45,7 @@ function! s:cmd_file(args, firstlnum, lastlnum)
     endif
 
     if user ==# ''
-        call s:error('github.user is not set.')
-        call s:error("Please set by 'git config github.user yourname'.")
+        call s:error('Could not detect repos user.')
         return
     endif
     if repos ==# ''
@@ -79,12 +79,19 @@ function! s:cmd_issue(args)
         return
     endif
 
-    let user  = s:get_github_user()
-    let repos = s:get_github_repos_name()
+    let mlist = matchlist(get(a:args, 1, ''),
+    \                     '^\([^/]\+\)/\([^/]\+\)$')
+    if !empty(mlist)
+        let user  = mlist[1]
+        let repos = mlist[2]
+    else
+        let result = s:parse_github_remote_url()
+        let user   = get(result, 'user', '')
+        let repos  = get(result, 'repos', '')
+    endif
 
     if user ==# ''
-        call s:error('github.user is not set.')
-        call s:error("Please set by 'git config github.user yourname'.")
+        call s:error('Could not detect repos user.')
         return
     endif
     if repos ==# ''
@@ -113,26 +120,25 @@ function! s:call_with_temp_dir(dir, funcname, args)
     endtry
 endfunction
 
-function! s:get_github_user()
-    return s:git('config', '--get', 'github.user')
-endfunction
-
-function! s:get_github_repos_name()
+function! s:parse_github_remote_url()
     let host = s:get_github_host()
     let host_re = substitute(host, '\.', '\.', 'g')
-    let ssh_re = 'git@'.host_re.':[^/]\+/\([^/]\+\)\s'
-    let git_re = 'git://'.host_re.'/[^/]\+/\([^/]\+\)\s'
-    let https_re = 'https\?://'.host_re.'/[^/]\+/\([^/]\+\)\s'
+    let ssh_re = 'git@'.host_re.':\([^/]\+\)/\([^/]\+\)\s'
+    let git_re = 'git://'.host_re.'/\([^/]\+\)/\([^/]\+\)\s'
+    let https_re = 'https\?://'.host_re.'/\([^/]\+\)/\([^/]\+\)\s'
 
     for line in s:git_lines('remote', '-v')
         for re in [ssh_re, git_re, https_re]
             let m = matchlist(line, re)
             if !empty(m)
-                return substitute(m[1], '\.git$', '', '')
+                return {
+                \   'user': m[1],
+                \   'repos': substitute(m[2], '\.git$', '', ''),
+                \}
             endif
         endfor
     endfor
-    return ''
+    return {}
 endfunction
 
 function! s:get_repos_branch()
