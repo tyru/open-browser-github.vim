@@ -8,6 +8,7 @@ set cpo&vim
 
 let s:V = vital#of('open-browser-github.vim')
 let s:Filepath = s:V.import('System.Filepath')
+let s:List = s:V.import('Data.List')
 
 
 function! openbrowser#github#load()
@@ -31,9 +32,10 @@ function! s:cmd_file(args, firstlnum, lastlnum)
         return
     endif
 
-    let result  = s:parse_github_remote_url()
-    let user    = get(result, 'user', '')
-    let repos   = get(result, 'repos', '')
+    let github_host  = s:get_github_host()
+    let github_repos = s:detect_github_repos_from_git_remote(github_host)
+    let user    = get(github_repos, 'user', '')
+    let repos   = get(github_repos, 'repos', '')
     let branch  = s:get_repos_branch()
     let relpath = s:get_repos_relpath(file)
     let rangegiven = a:firstlnum isnot 1 || a:lastlnum isnot line('$')
@@ -85,9 +87,10 @@ function! s:cmd_issue(args)
         let user  = mlist[1]
         let repos = mlist[2]
     else
-        let result = s:parse_github_remote_url()
-        let user   = get(result, 'user', '')
-        let repos  = get(result, 'repos', '')
+        let github_host  = s:get_github_host()
+        let github_repos = s:detect_github_repos_from_git_remote(github_host)
+        let user         = get(github_repos, 'user', '')
+        let repos        = get(github_repos, 'repos', '')
     endif
 
     if user ==# ''
@@ -129,18 +132,47 @@ function! s:parse_github_remote_url()
     let git_re = 'git://'.host_re.'/\([^/]\+\)/\([^/]\+\)\s'
     let https_re = 'https\?://'.host_re.'/\([^/]\+\)/\([^/]\+\)\s'
 
+    let matched = []
     for line in s:git_lines('remote', '-v')
         for re in [ssh_re, git_re, https_re]
             let m = matchlist(line, re)
             if !empty(m)
-                return {
+                call add(matched, {
                 \   'user': m[1],
                 \   'repos': substitute(m[2], '\.git$', '', ''),
-                \}
+                \})
             endif
         endfor
     endfor
-    return {}
+    return matched
+endfunction
+
+function! s:detect_github_repos_from_git_remote(github_host)
+    let github_urls = s:parse_github_remote_url()
+    let github_urls = s:List.uniq(github_urls, 'v:val.user."/".v:val.repos')
+    let NONE = {}
+    if len(github_urls) ==# 0
+        return NONE
+    elseif len(github_urls) ==# 1
+        return github_urls[0]
+    else
+        " Prompt which GitHub URL.
+        let GITHUB_URL_FORMAT = 'http://%s/%s/%s'
+        let list = ['Which GitHub repository?']
+        for i in range(len(github_urls))
+            let url = printf(GITHUB_URL_FORMAT,
+            \                a:github_host,
+            \                github_urls[i].user,
+            \                github_urls[i].repos)
+            call add(list, (i+1).'. '.url)
+        endfor
+        let index = inputlist(list)
+        if 1 <=# index && index <=# len(github_urls)
+            return github_urls[index-1]
+        else
+            return NONE
+        endif
+    endif
 endfunction
 
 function! s:get_repos_branch()
