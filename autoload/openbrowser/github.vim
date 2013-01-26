@@ -125,6 +125,11 @@ endfunction
 function! s:call_with_temp_dir(dir, funcname, args)
     let haslocaldir = haslocaldir()
     let cwd = getcwd()
+    " a:dir could be empty string
+    " when specifying opening repos.
+    " e.g.)
+    " * :OpenGithubFile path/to/file
+    " * :OpenGithubIssue {number} {user}/{repos}
     if a:dir !=# '' && a:dir !=# cwd
         execute 'lcd' a:dir
     endif
