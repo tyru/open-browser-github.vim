@@ -218,7 +218,7 @@ endfunction
 
 function! s:get_repos_relpath(file)
     let relpath = ''
-    if s:is_relpath(a:file)
+    if s:Filepath.is_relative(a:file)
         let dir = s:git('rev-parse', '--show-prefix')
         let dir = dir !=# '' ? dir.'/' : ''
         let relpath = dir.a:file
@@ -263,10 +263,6 @@ function! s:is_git_dir(dir)
     " .git may be a file when its repository is a submodule.
     let dotgit = s:Filepath.join(a:dir, '.git')
     return isdirectory(dotgit) || filereadable(dotgit)
-endfunction
-
-function! s:is_relpath(path)
-    return a:path !=# '' && a:path[0] !=# '/'
 endfunction
 
 function! s:open_github_url(github_host, path)
