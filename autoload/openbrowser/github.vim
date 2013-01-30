@@ -279,9 +279,15 @@ endfunction
 
 
 
-function! s:git(...)
-    return s:trim(system(join(['git'] + a:000, ' ')))
-endfunction
+if globpath(&rtp, 'autoload/vimproc.vim') !=# ''
+    function! s:git(...)
+        return s:trim(vimproc#system(['git'] + a:000))
+    endfunction
+else
+    function! s:git(...)
+        return s:trim(system(join(['git'] + a:000, ' ')))
+    endfunction
+endif
 
 function! s:git_lines(...)
     let output = call('s:git', a:000)
