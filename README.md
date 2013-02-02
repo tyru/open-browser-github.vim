@@ -3,7 +3,7 @@
 ## About
 
 Opens GitHub URL of current file, etc. from Vim.
-Also supported GitHub Enterprise.
+Also supports GitHub Enterprise.
 
 ## Install
 
