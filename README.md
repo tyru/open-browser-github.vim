@@ -37,7 +37,7 @@ Opens a specific Issue.
 :OpenGithubIssue 1 tyru/open-browser.vim
 ```
 
-There is also a command called `:OpenGithubPullReq`, but it basically does the same thing as `:OpenGithubIssue` since GitHub redirects `/issues/1` to `/pull/1` if #1 is a Pull Request.
+The third command is `:OpenGithubPullReq`, but it basically does the same thing as `:OpenGithubIssue` since GitHub redirects `/issues/1` to `/pull/1` if #1 is a Pull Request.
 
 ## GitHub Enterprise setting
 
