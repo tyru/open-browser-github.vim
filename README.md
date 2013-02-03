@@ -7,7 +7,7 @@ Also supports GitHub Enterprise.
 
 ## Install
 
-Since this is a plugin of [open-browser.vim](https://github.com/tyru/open-browser.vim), you will need to install open-browser.vim first.
+Since this plugin depends on [open-browser.vim](https://github.com/tyru/open-browser.vim), you will need to install open-browser.vim first.
 
 ## Usage
 
