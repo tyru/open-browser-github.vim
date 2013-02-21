@@ -21,9 +21,9 @@ if globpath(&rtp, 'plugin/openbrowser.vim') ==# ''
 endif
 
 
-command! -range=% -bar -nargs=* -complete=file
+command! -range=0 -bar -nargs=* -complete=file
 \   OpenGithubFile
-\   <line1>,<line2>call openbrowser#github#file([<f-args>])
+\   call openbrowser#github#file([<f-args>], <count>, <line1>, <line2>)
 
 command! -bar -nargs=+
 \   OpenGithubIssue
