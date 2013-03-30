@@ -176,6 +176,14 @@ function! s:parse_github_remote_url(github_host)
     return matched
 endfunction
 
+" Detect user name and repos name from 'git remote -v' output.
+" * Duplicated candidates of user and repos are removed.
+" * Returns empty Dictionary if no valid GitHub repos are found.
+" * Returns an Dictionary with 'user' and 'repos'
+"   if exact 1 repos is found.
+" * Prompt a user to choose which repos
+"   if 2 or more repos are found.
+"   * Throws "INVALID INDEX" if invalid input was given.
 function! s:detect_github_repos_from_git_remote(github_host)
     let github_urls = s:parse_github_remote_url(a:github_host)
     let github_urls = s:List.uniq(github_urls, 'v:val.user."/".v:val.repos')
