@@ -20,6 +20,10 @@ if globpath(&rtp, 'plugin/openbrowser.vim') ==# ''
     finish
 endif
 
+if g:openbrowser_github_always_used_branch
+    let g:openbrowser_github_always_used_branch = ''
+endif
+
 
 command! -range=0 -bar -nargs=* -complete=file
 \   OpenGithubFile
