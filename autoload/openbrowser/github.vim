@@ -42,6 +42,16 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum)
     endif
 
     let github_host = s:get_github_host()
+
+    " May prompt user to choose which repos is used.
+    try
+        let github_repos =
+        \   s:detect_github_repos_from_git_remote(github_host)
+    catch /^INVALID INDEX$/
+        call s:error('canceled or invalid GitHub URL was selected.')
+        return
+    endtry
+
     let user        = get(github_repos, 'user', '')
     let repos       = get(github_repos, 'repos', '')
     let relpath     = s:get_repos_relpath(file)
@@ -58,15 +68,6 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum)
     else
         let lnum = ''
     endif
-
-    " May prompt user to choose which repos is used.
-    try
-        let github_repos =
-        \   s:detect_github_repos_from_git_remote(github_host)
-    catch /^INVALID INDEX$/
-        call s:error('canceled or invalid GitHub URL was selected.')
-        return
-    endtry
 
     " Check input values.
     if user ==# ''
