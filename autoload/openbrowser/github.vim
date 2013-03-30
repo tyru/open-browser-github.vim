@@ -21,6 +21,15 @@ function! openbrowser#github#file(args, rangegiven, firstlnum, lastlnum)
     call s:call_with_temp_dir(gitdir, 's:cmd_file', [a:args, a:rangegiven, a:firstlnum, a:lastlnum])
 endfunction
 
+" Opens a specific file in github.com repository.
+"
+" ex)
+" Opens current files URL in github.com
+"   :OpenGithubFile
+" Opens current files highlighted place in github.com
+"   :'<,'>OpenGithubFile
+" Opens a specific file in github.com
+"   :OpenGithubFile PATH/TO/FILE
 function! s:cmd_file(args, rangegiven, firstlnum, lastlnum)
     let file = expand(empty(a:args) ? '%' : a:args[0])
     if !filereadable(file)
@@ -32,7 +41,20 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum)
         return
     endif
 
-    let github_host  = s:get_github_host()
+    let github_host = s:get_github_host()
+    let user        = get(github_repos, 'user', '')
+    let repos       = get(github_repos, 'repos', '')
+    let branch      = s:get_repos_branch()
+    let relpath     = s:get_repos_relpath(file)
+
+    if a:rangegiven
+        let lnum = '#L'.a:firstlnum
+        \          .(a:firstlnum is a:lastlnum ? '' : '-L'.a:lastlnum)
+    else
+        let lnum = ''
+    endif
+
+    " May prompt user to choose which repos is used.
     try
         let github_repos =
         \   s:detect_github_repos_from_git_remote(github_host)
@@ -40,17 +62,8 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum)
         call s:error('canceled or invalid GitHub URL was selected.')
         return
     endtry
-    let user    = get(github_repos, 'user', '')
-    let repos   = get(github_repos, 'repos', '')
-    let branch  = s:get_repos_branch()
-    let relpath = s:get_repos_relpath(file)
-    if a:rangegiven
-        let lnum  = '#L'.a:firstlnum
-        \          .(a:firstlnum is a:lastlnum ? '' : '-L'.a:lastlnum)
-    else
-        let lnum = ''
-    endif
 
+    " Check input values.
     if user ==# ''
         call s:error('Could not detect repos user.')
         return
@@ -79,6 +92,13 @@ function! openbrowser#github#issue(args)
     call s:call_with_temp_dir(gitdir, 's:cmd_issue', [a:args])
 endfunction
 
+" Opens a specific Issue.
+"
+" ex)
+" Opens current repositories Issue #1
+"   :OpenGithubIssue 1
+" Opens a specific repositories Issue #1
+"   :OpenGithubIssue 1 tyru/open-browser.vim
 function! s:cmd_issue(args)
     " '#1' and '1' are supported.
     let number = matchstr(a:args[0], '^#\?\zs\d\+\ze$')
@@ -88,6 +108,9 @@ function! s:cmd_issue(args)
     endif
 
     let github_host = s:get_github_host()
+
+    " If a:args[1] was given and valid format,
+    " set user and repos.
     let mlist = matchlist(get(a:args, 1, ''),
     \                     '^\([^/]\+\)/\([^/]\+\)$')
     if !empty(mlist)
@@ -101,10 +124,11 @@ function! s:cmd_issue(args)
             call s:error('canceled or invalid GitHub URL was selected.')
             return
         endtry
-        let user         = get(github_repos, 'user', '')
-        let repos        = get(github_repos, 'repos', '')
+        let user  = get(github_repos, 'user', '')
+        let repos = get(github_repos, 'repos', '')
     endif
 
+    " Check input values.
     if user ==# ''
         call s:error('Could not detect repos user.')
         return
