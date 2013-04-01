@@ -15,7 +15,7 @@ There are 3 commands.
 
 ### `:OpenGithubFile`
 
-Opens a specific file in github.com repository(it also opens in the current branch).
+Opens a specific file in github.com repository(it also opens in the current branch by default).
 
 ```vimL
 " Opens current files URL in github.com

@@ -54,8 +54,13 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum)
 
     let user        = get(github_repos, 'user', '')
     let repos       = get(github_repos, 'repos', '')
-    let branch      = s:get_repos_branch()
     let relpath     = s:get_repos_relpath(file)
+
+    if g:openbrowser_github_always_used_branch !=# ''
+        let branch = g:openbrowser_github_always_used_branch
+    else
+        let branch = s:get_repos_branch()
+    endif
 
     if a:rangegiven
         let lnum = '#L'.a:firstlnum
