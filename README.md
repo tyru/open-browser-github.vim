@@ -7,7 +7,10 @@ Also supports GitHub Enterprise.
 
 ## Install
 
-Since this plugin depends on [open-browser.vim](https://github.com/tyru/open-browser.vim), you will need to install open-browser.vim first.
+This plugin requires:
+
+* open-browser.vim
+* `git` command in your PATH
 
 ## Usage
 
