@@ -31,6 +31,9 @@ endif
 if !exists('g:openbrowser_github_always_used_branch')
     let g:openbrowser_github_always_used_branch = ''
 endif
+if !exists('g:openbrowser_github_always_use_commit_hash')
+    let g:openbrowser_github_always_use_commit_hash = 0
+endif
 
 
 command! -range=0 -bar -nargs=* -complete=file

@@ -58,8 +58,18 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum)
 
     if g:openbrowser_github_always_used_branch !=# ''
         let branch = g:openbrowser_github_always_used_branch
+    elseif g:openbrowser_github_always_use_commit_hash
+        let branch = s:git('rev-parse', 'HEAD')
     else
-        let branch = s:get_repos_branch()
+        " When working tree is detached state,
+        " branch becomes commit hash.
+        let head_ref = s:git('symbolic-ref', '--short', '-q', 'HEAD')
+        if head_ref !=# ''
+            let branch = head_ref
+        else
+            " Detached state
+            let branch = s:git('rev-parse', 'HEAD')
+        endif
     endif
 
     if a:rangegiven
@@ -240,17 +250,6 @@ function! s:detect_github_repos_from_git_remote(github_host)
             throw 'INVALID INDEX'
         endif
     endif
-endfunction
-
-function! s:get_repos_branch()
-    let lines = s:git_lines('branch')
-    let re = '\* '
-    call filter(lines, 'v:val =~# re')
-    if empty(lines)
-        return ''
-    endif
-    let idx = matchend(lines[0], re)
-    return idx >= 0 ? lines[0][idx :] : ''
 endfunction
 
 function! s:get_repos_relpath(file)
