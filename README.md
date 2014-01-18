@@ -9,7 +9,7 @@ Also supports GitHub Enterprise.
 
 This plugin requires:
 
-* open-browser.vim
+* [open-browser.vim](https://github.com/tyru/open-browser.vim)
 * `git` command in your PATH
 
 ## Usage
@@ -40,7 +40,9 @@ Opens a specific Issue.
 :OpenGithubIssue 1 tyru/open-browser.vim
 ```
 
-The third command is `:OpenGithubPullReq`, but it basically does the same thing as `:OpenGithubIssue` since GitHub redirects `/issues/1` to `/pull/1` if #1 is a Pull Request.
+### `:OpenGithubPullReq`
+
+The third command is `:OpenGithubPullReq`, but it does entirely the same thing as `:OpenGithubIssue` since GitHub redirects `/issues/1` to `/pull/1` if #1 is a Pull Request.
 
 ## GitHub Enterprise setting
 

@@ -1,4 +1,4 @@
-*github.txt* *github*
+*openbrowser-github* *openbrowser-github.txt* Launch GitHub quickly from Vim
 
 Author:
   tyru <tyru.exe@gmail.com>
@@ -17,38 +17,27 @@ License: NEW BSD LICENSE {{{
 }}}
 
 ==============================================================================
-CONTENTS						*github-contents*
+CONTENTS						*openbrowser-github-contents*
 
-Introduction		|github-introduction|
-Requirements		|github-requirements|
-Interface			|github-interface|
-  Keymappings		|github-keymappings|
-  Variables			|github-variables|
-  Commands			|github-commands|
-TODO				|github-todo|
-Changelog			|github-changelog|
+Introduction		|openbrowser-github-introduction|
+Requirements		|openbrowser-github-requirements|
+Interface			|openbrowser-github-interface|
+  Keymappings		|openbrowser-github-keymappings|
+  Variables			|openbrowser-github-variables|
+  Commands			|openbrowser-github-commands|
+TODO				|openbrowser-github-todo|
+Changelog			|openbrowser-github-changelog|
 
 
 ==============================================================================
-INTRODUCTION						*github-introduction* {{{
-
-## About
+INTRODUCTION						*openbrowser-github-introduction* {{{
 
 Opens GitHub URL of current file, etc. from Vim.
 Also supports GitHub Enterprise.
 
-## Install
 
-This plugin requires:
-
-* open-browser.vim
-* git command in your PATH
-
-## Usage
-
-There are 3 commands.
-
-### :OpenGithubFile
+:OpenGithubFile
+---------------
 
 Opens a specific file in github.com repository(it also opens in the current branch by default).
 >
@@ -60,7 +49,8 @@ Opens a specific file in github.com repository(it also opens in the current bran
 	:OpenGithubFile PATH/TO/FILE
 <
 
-### :OpenGithubIssue
+:OpenGithubIssue
+----------------
 
 Opens a specific Issue.
 >
@@ -68,10 +58,19 @@ Opens a specific Issue.
 	:OpenGithubIssue 1
 	" Opens a specific repositories Issue #1
 	:OpenGithubIssue 1 tyru/open-browser.vim
-<
-The third command is |:OpenGithubPullReq|, but it basically does the same thing as |:OpenGithubIssue| since GitHub redirects '/issues/1' to '/pull/1' if #1 is a Pull Request.
 
-## GitHub Enterprise setting
+
+:OpenGithubPullReq
+------------------
+
+The third command is |:OpenGithubPullReq|
+but it does entirely the same thing as |:OpenGithubIssue|
+since GitHub redirects '/issues/1' to '/pull/1'
+if #1 is a Pull Request.
+
+
+GitHub Enterprise setting
+-------------------------
 
 Like the hub command(https://github.com/defunkt/hub), by setting 'hub.host', you can open a GitHub Enterprise repository page.
 
@@ -81,18 +80,19 @@ You can set 'hub.host' by executing the command below. Make sure you execute it 
 <
 }}}
 ==============================================================================
-REQUIREMENTS						*github-requirements* {{{
+REQUIREMENTS						*openbrowser-github-requirements* {{{
 
 You must install the following plugin/libraries.
 
 * open-browser.vim
   https://github.com/tyru/open-browser.vim
+* git command in your PATH
 
 }}}
 ==============================================================================
-INTERFACE				*github-interface* {{{
+INTERFACE				*openbrowser-github-interface* {{{
 ------------------------------------------------------------------------------
-KEYMAPPINGS					*github-keymappings* {{{
+KEYMAPPINGS					*openbrowser-github-keymappings* {{{
 
 
 Default keymappings
@@ -101,20 +101,38 @@ Default keymappings
 
 }}}
 ------------------------------------------------------------------------------
-VARIABLES					*github-variables* {{{
+VARIABLES					*openbrowser-github-variables* {{{
 
-					*g:github_no_default_keymappings*
-g:github_no_default_keymappings
-	If this variable is defined and non-zero,
-	|github| will not define default keymappings.
+					*g:openbrowser_github_always_used_branch*
+g:openbrowser_github_always_used_branch
+							(Default: "")
+	If this variable is not empty string,
+	|openbrowser-github| always opens current file
+	in the branch.
+
+					*g:openbrowser_github_always_use_commit_hash*
+g:openbrowser_github_always_use_commit_hash
+							(Default: 0)
+	If this variable is non-zero value,
+	|openbrowser-github| always opens a URL
+	with a current commit hash.
+	ex) https://github.com/tyru/open-browser.vim/blob/9f1de0e38a1e378061a8f10df6ed8e22c48aa9ae/autoload/openbrowser.vim
+
+	If this variable is zero value,
+	|openbrowser-github| opens a URL
+	with a current commit hash
+	if current working tree is detached state.
+	Otherwise, |openbrowser-github| opens a URL
+	with a current branch's latest file.
+	ex) https://github.com/tyru/open-browser.vim/blob/master/autoload/openbrowser.vim
 
 }}}
 ------------------------------------------------------------------------------
-COMMANDS					*github-commands* {{{
+COMMANDS					*openbrowser-github-commands* {{{
 }}}
 }}}
 ==============================================================================
-TODO						*github-todo* {{{
+TODO						*openbrowser-github-todo* {{{
 
 any request? ;)
 
@@ -122,7 +140,7 @@ https://github.com/tyru/github.vim/issues
 
 }}}
 ==============================================================================
-CHANGELOG						*github-changelog* {{{
+CHANGELOG						*openbrowser-github-changelog* {{{
 
 0.0.0:
 - Initial upload
