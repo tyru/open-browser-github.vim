@@ -13,10 +13,18 @@ set cpo&vim
 " }}}
 
 
-if globpath(&rtp, 'plugin/openbrowser.vim') ==# ''
+function! s:error(msg)
     echohl ErrorMsg
-    echomsg 'open-browser-github.vim depends on open-browser.vim. Please install open-browser.vim'
+    echomsg a:msg
     echohl None
+endfunction
+
+if executable('git')
+    call s:error('Please install git in your PATH.')
+    finish
+endif
+if globpath(&rtp, 'plugin/openbrowser.vim') ==# ''
+    call s:error('open-browser-github.vim depends on open-browser.vim. Please install open-browser.vim')
     finish
 endif
 
