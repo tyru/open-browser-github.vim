@@ -19,7 +19,7 @@ function! s:error(msg)
     echohl None
 endfunction
 
-if executable('git')
+if !executable('git')
     call s:error('Please install git in your PATH.')
     finish
 endif
