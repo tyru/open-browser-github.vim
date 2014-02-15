@@ -16,7 +16,7 @@ function! openbrowser#github#load()
 endfunction
 
 function! openbrowser#github#file(args, rangegiven, firstlnum, lastlnum)
-    let file = expand(empty(a:args) ? '%' : a:args[0])
+    let file = s:resolve(expand(empty(a:args) ? '%' : a:args[0]))
     let gitdir = s:lookup_gitdir(file)
     call s:call_with_temp_dir(gitdir, 's:cmd_file', [a:args, a:rangegiven, a:firstlnum, a:lastlnum])
 endfunction
@@ -31,7 +31,7 @@ endfunction
 " Opens a specific file in github.com
 "   :OpenGithubFile PATH/TO/FILE
 function! s:cmd_file(args, rangegiven, firstlnum, lastlnum)
-    let file = expand(empty(a:args) ? '%' : a:args[0])
+    let file = s:resolve(expand(empty(a:args) ? '%' : a:args[0]))
     if !filereadable(file)
         if a:0 is 0
             call s:error("current buffer is not a file.")
@@ -338,6 +338,10 @@ function! s:trim(str)
     let str = substitute(str, '^[ \t\n]\+', '', 'g')
     let str = substitute(str, '[ \t\n]\+$', '', 'g')
     return str
+endfunction
+
+function! s:resolve(path)
+    return exists('*resolve') ? resolve(a:path) : a:path
 endfunction
 
 function! s:error(msg)
