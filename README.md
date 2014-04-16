@@ -38,6 +38,10 @@ Opens a specific Issue.
 :OpenGithubIssue 1
 " Opens a specific repositories Issue #1
 :OpenGithubIssue 1 tyru/open-browser.vim
+" Opens current repositories Issue List
+:OpenGithubIssue
+" Opens a specific repositories Issue list
+:OpenGithubIssue tyru/open-browser.vim
 ```
 
 ### `:OpenGithubPullReq`
