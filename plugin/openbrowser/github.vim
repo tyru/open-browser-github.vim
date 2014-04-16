@@ -40,12 +40,12 @@ command! -range=0 -bar -nargs=* -complete=file
 \   OpenGithubFile
 \   call openbrowser#github#file([<f-args>], <count>, <line1>, <line2>)
 
-command! -bar -nargs=+
+command! -bar -nargs=*
 \   OpenGithubIssue
 \   call openbrowser#github#issue([<f-args>])
 
 " GitHub redirects /issues/1 to /pull/1 if #1 is pull req.
-command! -bar -nargs=+
+command! -bar -nargs=*
 \   OpenGithubPullReq
 \   OpenGithubIssue <args>
 
