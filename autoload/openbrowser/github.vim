@@ -115,19 +115,23 @@ endfunction
 "   :OpenGithubIssue 1
 " Opens a specific repositories Issue #1
 "   :OpenGithubIssue 1 tyru/open-browser.vim
+" Opens current repositories Issue List
+"   :OpenGithubIssue
+" Opens a specific repositories Issue List
+"   :OpenGithubIssue tyru/open-browser.vim
 function! s:cmd_issue(args)
     " '#1' and '1' are supported.
-    let number = matchstr(a:args[0], '^#\?\zs\d\+\ze$')
-    if number ==# ''
-        call s:error("'".a:args[0]."' does not appear to be an issue number.")
-        return
-    endif
+    let number = matchstr(get(a:args, 0, ''), '^#\?\zs\d\+\ze$')
 
     let github_host = s:get_github_host()
 
-    " If a:args[1] was given and valid format,
+    " If the issue number is omitted, the index of argument of repository will
+    " become 0 (a:args[0]), otherwise 1 (a:args[1])
+    let repos_arg_index = number == '' ? 0 : 1
+
+    " If the argument of repository was given and valid format,
     " set user and repos.
-    let mlist = matchlist(get(a:args, 1, ''),
+    let mlist = matchlist(get(a:args, repos_arg_index, ''),
     \                     '^\([^/]\+\)/\([^/]\+\)$')
     if !empty(mlist)
         let user  = mlist[1]
