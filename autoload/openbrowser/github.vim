@@ -189,7 +189,7 @@ function! s:parse_github_remote_url(github_host)
     let host_re = substitute(a:github_host, '\.', '\.', 'g')
     let gh_host_re = 'github\.com'
 
-    let ssh_re_fmt = 'git@%s:\([^/]\+\)/\([^/]\+\)\s'
+    let ssh_re_fmt = 'git@%s.\([^/]\+\)/\([^/]\+\)\s'
     let git_re_fmt = 'git://%s/\([^/]\+\)/\([^/]\+\)\s'
     let https_re_fmt = 'https\?://%s/\([^/]\+\)/\([^/]\+\)\s'
 
