@@ -186,7 +186,7 @@ function! s:call_with_temp_dir(dir, funcname, args)
 endfunction
 
 function! s:parse_github_remote_url(github_host)
-    let host_re = substitute(a:github_host, '\.', '\.', 'g')
+    let host_re = escape(a:github_host, '.')
     let gh_host_re = 'github\.com'
 
     let ssh_re_fmt = 'git@%s:\([^/]\+\)/\([^/]\+\)\s'
