@@ -189,7 +189,10 @@ function! s:parse_github_remote_url(github_host)
     let host_re = escape(a:github_host, '.')
     let gh_host_re = 'github\.com'
 
-    let ssh_re_fmt = 'git@%s:\([^/]\+\)/\([^/]\+\)\s'
+    " ex) ssh_re_fmt also supports 'ssh://' protocol. (#10)
+    " - git@github.com:tyru/open-github-browser.vim
+    " - ssh://git@github.com/tyru/open-github-browser.vim
+    let ssh_re_fmt = 'git@%s[:/]\([^/]\+\)/\([^/]\+\)\s'
     let git_re_fmt = 'git://%s/\([^/]\+\)/\([^/]\+\)\s'
     let https_re_fmt = 'https\?://%s/\([^/]\+\)/\([^/]\+\)\s'
 
