@@ -65,11 +65,11 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum)
         " When working tree is detached state,
         " branch becomes commit hash.
         let head_ref = s:git('symbolic-ref', '--short', '-q', 'HEAD')
-        if head_ref !=# ''
-            let branch = head_ref
-        else
-            " Detached state
+        let is_detached_state = (head_ref ==# '')
+        if is_detached_state
             let branch = s:git('rev-parse', 'HEAD')
+        else
+            let branch = head_ref
         endif
     endif
 
