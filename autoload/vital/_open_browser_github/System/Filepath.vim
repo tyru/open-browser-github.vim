@@ -7,7 +7,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 let s:path_sep_pattern = (exists('+shellslash') ? '[\\/]' : '/') . '\+'
-let s:is_windows = has('win16') || has('win32') || has('win64')
+let s:is_windows = has('win16') || has('win32') || has('win64') || has('win95')
 let s:is_cygwin = has('win32unix')
 let s:is_mac = !s:is_windows && !s:is_cygwin
       \ && (has('mac') || has('macunix') || has('gui_macvim') ||
@@ -51,36 +51,42 @@ function! s:unify_separator(path)
 endfunction
 
 " Get the full path of command.
-function! s:which(command, ...)
-  let pathlist = a:command =~# s:path_sep_pattern ? [''] :
-  \              !a:0                  ? split($PATH, s:path_separator) :
-  \              type(a:1) == type([]) ? copy(a:1) :
-  \                                      split(a:1, s:path_separator)
+if exists('*exepath')
+  function! s:which(str)
+    return exepath(a:str)
+  endfunction
+else
+  function! s:which(command, ...)
+    let pathlist = a:command =~# s:path_sep_pattern ? [''] :
+    \              !a:0                  ? split($PATH, s:path_separator) :
+    \              type(a:1) == type([]) ? copy(a:1) :
+    \                                      split(a:1, s:path_separator)
 
-  let pathext = s:path_extensions()
-  if index(pathext, '.' . tolower(fnamemodify(a:command, ':e'))) != -1
-    let pathext = ['']
-  endif
+    let pathext = s:path_extensions()
+    if index(pathext, '.' . tolower(fnamemodify(a:command, ':e'))) != -1
+      let pathext = ['']
+    endif
 
-  let dirsep = s:separator()
-  for dir in pathlist
-    let head = dir ==# '' ? '' : dir . dirsep
-    for ext in pathext
-      let full = fnamemodify(head . a:command . ext, ':p')
-      if filereadable(full)
-        if s:is_case_tolerant()
-          let full = glob(substitute(
-          \               toupper(full), '\u:\@!', '[\0\L\0]', 'g'), 1)
+    let dirsep = s:separator()
+    for dir in pathlist
+      let head = dir ==# '' ? '' : dir . dirsep
+      for ext in pathext
+        let full = fnamemodify(head . a:command . ext, ':p')
+        if filereadable(full)
+          if s:is_case_tolerant()
+            let full = glob(substitute(
+            \               toupper(full), '\u:\@!', '[\0\L\0]', 'g'), 1)
+          endif
+          if full != ''
+            return full
+          endif
         endif
-        if full != ''
-          return full
-        endif
-      endif
+      endfor
     endfor
-  endfor
 
-  return ''
-endfunction
+    return ''
+  endfunction
+endif
 
 " Split the path with directory separator.
 " Note that this includes the drive letter of MS Windows.

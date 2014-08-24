@@ -6,9 +6,10 @@ let s:save_cpo = &cpo
 set cpo&vim
 " }}}
 
-let s:V = vital#of('open-browser-github.vim')
+let s:V = vital#of('open_browser_github')
 let s:Filepath = s:V.import('System.Filepath')
 let s:List = s:V.import('Data.List')
+unlet s:V
 
 
 function! openbrowser#github#load()
@@ -233,7 +234,7 @@ endfunction
 "   * Throws "INVALID INDEX" if invalid input was given.
 function! s:detect_github_repos_from_git_remote(github_host)
     let github_urls = s:parse_github_remote_url(a:github_host)
-    let github_urls = s:List.uniq(github_urls, 'v:val.user."/".v:val.repos')
+    let github_urls = s:List.uniq_by(github_urls, 'v:val.user."/".v:val.repos')
     let NONE = {}
     if len(github_urls) ==# 0
         return NONE
