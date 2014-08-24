@@ -98,9 +98,33 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum)
         return
     endif
 
-    call s:open_github_url(
-    \   github_host,
-    \   '/'.user.'/'.repos.'/blob/'.branch.'/'.relpath.lnum)
+    let url = 'http://' . github_host . '/' . user . '/' . repos . '/blob/' . branch . '/' . relpath . lnum
+    if !s:url_exists(url) && input(
+    \   "Maybe you are opening a URL which is not git-push'ed yet. OK?[y/n]: "
+    \) !~? '^\%[YES]$'
+        return
+    endif
+    return openbrowser#open(url)
+endfunction
+
+function! s:url_exists(url)
+    if !executable('curl')
+        return 1
+    endif
+    let cmdline = 'curl -k -LI "' . a:url . '"'
+    let headers = split(system(cmdline), '\n')
+    if v:shell_error
+        call s:warn(cmdline)
+        call s:warn('curl returned error code: ' . v:shell_error)
+        return 1
+    endif
+    let status_line = get(filter(headers, 'v:val =~# "^Status:"'), 0, '')
+    if status_line ==# ''
+        call s:warn(cmdline)
+        call s:warn("curl received a response without 'Status' header.")
+        return 1
+    endif
+    return status_line =~# '^Status:\s*2'
 endfunction
 
 function! openbrowser#github#issue(args)
@@ -159,9 +183,8 @@ function! s:cmd_issue(args)
         return
     endif
 
-    call s:open_github_url(
-    \   github_host,
-    \   '/'.user.'/'.repos.'/issues/'.number)
+    let url = 'http://' . github_host . '/' . user . '/' . repos . '/issues/' . number
+    return openbrowser#open(url)
 endfunction
 
 
@@ -309,11 +332,6 @@ function! s:is_git_dir(dir)
     return isdirectory(dotgit) || filereadable(dotgit)
 endfunction
 
-function! s:open_github_url(github_host, path)
-    let endpoint = 'http://'.a:github_host
-    return openbrowser#open(endpoint.a:path)
-endfunction
-
 function! s:get_github_host()
     " Enterprise GitHub is supported.
     " ('hub' command is using this config key)
@@ -353,13 +371,21 @@ function! s:resolve(path)
     return exists('*resolve') ? resolve(a:path) : a:path
 endfunction
 
-function! s:error(msg)
-    echohl ErrorMsg
+function! s:echomsg(msg, hl)
+    execute 'echohl' a:hl
     try
         echomsg 'openbrowser/github:' a:msg
     finally
         echohl None
     endtry
+endfunction
+
+function! s:warn(msg)
+    call s:echomsg(a:msg, 'WarningMsg')
+endfunction
+
+function! s:error(msg)
+    call s:echomsg(a:msg, 'ErrorMsg')
 endfunction
 
 
