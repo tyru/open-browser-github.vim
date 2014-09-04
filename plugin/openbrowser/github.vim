@@ -47,7 +47,7 @@ command! -bar -nargs=*
 " GitHub redirects /issues/1 to /pull/1 if #1 is pull req.
 command! -bar -nargs=*
 \   OpenGithubPullReq
-\   OpenGithubIssue <args>
+\   call openbrowser#github#pullreq([<f-args>])
 
 
 " Restore 'cpoptions' {{{
