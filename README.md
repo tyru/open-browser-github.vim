@@ -46,7 +46,7 @@ Opens a specific Issue.
 
 ### `:OpenGithubPullReq`
 
-The third command is `:OpenGithubPullReq`, but it does entirely the same thing as `:OpenGithubIssue` since GitHub redirects `/issues/1` to `/pull/1` if #1 is a Pull Request.
+The third command is `:OpenGithubPullReq`.  It opens `/pulls` page when it has no argument.  Otherwise, it does entirely the same thing as `:OpenGithubIssue` since GitHub redirects `/issues/1` to `/pull/1` if #1 is a Pull Request.
 
 ## GitHub Enterprise setting
 

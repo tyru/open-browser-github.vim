@@ -130,7 +130,13 @@ endfunction
 function! openbrowser#github#issue(args)
     let file = expand('%')
     let gitdir = s:lookup_gitdir(file)
-    call s:call_with_temp_dir(gitdir, 's:cmd_issue', [a:args])
+    call s:call_with_temp_dir(gitdir, 's:cmd_issue', [a:args, 0])
+endfunction
+
+function! openbrowser#github#pullreq(args)
+    let file = expand('%')
+    let gitdir = s:lookup_gitdir(file)
+    call s:call_with_temp_dir(gitdir, 's:cmd_issue', [a:args, 1])
 endfunction
 
 " Opens a specific Issue.
@@ -144,7 +150,7 @@ endfunction
 "   :OpenGithubIssue
 " Opens a specific repositories Issue List
 "   :OpenGithubIssue tyru/open-browser.vim
-function! s:cmd_issue(args)
+function! s:cmd_issue(args, pullreq)
     " '#1' and '1' are supported.
     let number = matchstr(get(a:args, 0, ''), '^#\?\zs\d\+\ze$')
 
@@ -183,7 +189,8 @@ function! s:cmd_issue(args)
         return
     endif
 
-    let url = 'http://' . github_host . '/' . user . '/' . repos . '/issues/' . number
+    let url = 'http://' . github_host . '/' . user . '/' . repos . '/' .
+    \         (a:pullreq && number ==# '' ? 'pulls' : 'issues') . '/' . number
     return openbrowser#open(url)
 endfunction
 
