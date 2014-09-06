@@ -189,7 +189,8 @@ function! s:cmd_issue(args, pullreq)
         return
     endif
 
-    let url = 'http://' . github_host . '/' . user . '/' . repos . '/' . (a:pullreq ? 'pulls' : 'issues') . '/' . number
+    let url = 'http://' . github_host . '/' . user . '/' . repos . '/' .
+    \         (a:pullreq && number ==# '' ? 'pulls' : 'issues') . '/' . number
     return openbrowser#open(url)
 endfunction
 
