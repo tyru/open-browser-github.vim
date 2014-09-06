@@ -49,7 +49,7 @@ Opens a specific file in github.com repository(it also opens in the current bran
 	:OpenGithubFile PATH/TO/FILE
 <
 
-:OpenGithubIssue
+:OpenGithubIssue				*:OpenGithubIssue*
 ----------------
 
 Opens a specific Issue.
@@ -64,7 +64,7 @@ Opens a specific Issue.
 	:OpenGithubIssue tyru/open-browser.vim
 
 
-:OpenGithubPullReq
+:OpenGithubPullReq				*:OpenGithubPullReq*
 ------------------
 
 The third command is |:OpenGithubPullReq|
