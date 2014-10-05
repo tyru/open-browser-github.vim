@@ -105,12 +105,22 @@ COMMANDS					*openbrowser-github-commands* {{{
 Opens a specific file in github.com repository(it also opens in the current branch by default).
 >
 	" Opens current files URL in github.com
+	" ex) https://{hostname}/{user}/{repos}/blob/{hash or branch}/{relpath}
 	:OpenGithubFile
-	" Opens current files highlighted place in github.com 
+
+	" Opens current files highlighted place in github.com
+	" ex) https://{hostname}/{user}/{repos}/blob/{hash or branch}/{relpath}#{lnum}
 	:'<,'>OpenGithubFile
+
 	" Opens a specific file in github.com
+	" ex) https://{hostname}/{user}/{repos}/blob/{hash or branch}/PATH/TO/FILE#{lnum}
 	:OpenGithubFile PATH/TO/FILE
 <
+	Those URLs are influenced by some global variables.
+	See:
+	* |g:openbrowser_github_always_used_branch|
+	* |g:openbrowser_github_always_use_commit_hash|
+
 
 							*:OpenGithubIssue*
 :OpenGithubIssue
@@ -121,12 +131,19 @@ Opens a specific file in github.com repository(it also opens in the current bran
 Opens a specific Issue.
 >
 	" Opens current repositories Issue #1
+	" ex) https://{hostname}/{user}/{repos}/issues/1
 	:OpenGithubIssue 1
+
 	" Opens a specific repositories Issue #1
+	" ex) https://{hostname}/tyru/open-browser.vim/issues/1
 	:OpenGithubIssue 1 tyru/open-browser.vim
+
 	" Opens current repositories Issue List
+	" ex) https://{hostname}/{user}/{repos}/issues
 	:OpenGithubIssue
+
 	" Opens a specific repositories Issue list
+	" ex) https://{hostname}/tyru/open-browser.vim/issues
 	:OpenGithubIssue tyru/open-browser.vim
 <
 
@@ -136,8 +153,7 @@ Opens a specific Issue.
 :OpenGithubPullReq {repos}
 ------------------
 
-The third command is |:OpenGithubPullReq|.
-It opens '/pulls' page when it has no argument.
+Opens '/pulls' page when it has no argument.
 Otherwise, it does entirely the same thing as |:OpenGithubIssue|
 since GitHub redirects '/issues/1' to '/pull/1'
 if #1 is a Pull Request.
@@ -147,7 +163,7 @@ if #1 is a Pull Request.
 ==============================================================================
 TODO						*openbrowser-github-todo* {{{
 
-any request? ;)
+Any requests? ;)
 
 https://github.com/tyru/github.vim/issues
 

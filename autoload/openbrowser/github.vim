@@ -102,6 +102,7 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum)
     if !s:url_exists(url) && input(
     \   "Maybe you are opening a URL which is not git-push'ed yet. OK?[y/n]: "
     \) !~? '^\%[YES]$'
+        " TODO: Retry
         return
     endif
     return openbrowser#open(url)
