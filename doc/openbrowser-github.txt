@@ -33,56 +33,10 @@ Changelog			|openbrowser-github-changelog|
 INTRODUCTION						*openbrowser-github-introduction* {{{
 
 Opens GitHub URL of current file, etc. from Vim.
-Also supports GitHub Enterprise.
+Also supports GitHub Enterprise(|openbrowser-github-enterprise|).
 
+See |openbrowser-github-commands| for the details of available commands.
 
-:OpenGithubFile
----------------
-
-Opens a specific file in github.com repository(it also opens in the current branch by default).
->
-	" Opens current files URL in github.com
-	:OpenGithubFile
-	" Opens current files highlighted place in github.com 
-	:'<,'>OpenGithubFile
-	" Opens a specific file in github.com
-	:OpenGithubFile PATH/TO/FILE
-<
-
-:OpenGithubIssue				*:OpenGithubIssue*
-----------------
-
-Opens a specific Issue.
->
-	" Opens current repositories Issue #1
-	:OpenGithubIssue 1
-	" Opens a specific repositories Issue #1
-	:OpenGithubIssue 1 tyru/open-browser.vim
-	" Opens current repositories Issue List
-	:OpenGithubIssue
-	" Opens a specific repositories Issue list
-	:OpenGithubIssue tyru/open-browser.vim
-
-
-:OpenGithubPullReq				*:OpenGithubPullReq*
-------------------
-
-The third command is |:OpenGithubPullReq|.
-It opens '/pulls' page when it has no argument.
-Otherwise, it does entirely the same thing as |:OpenGithubIssue|
-since GitHub redirects '/issues/1' to '/pull/1'
-if #1 is a Pull Request.
-
-
-GitHub Enterprise setting
--------------------------
-
-Like the hub command(https://github.com/defunkt/hub), by setting 'hub.host', you can open a GitHub Enterprise repository page.
-
-You can set 'hub.host' by executing the command below. Make sure you execute it in the git repository.
->
-	$ git config --local hub.host my.git.org
-<
 }}}
 ==============================================================================
 REQUIREMENTS						*openbrowser-github-requirements* {{{
@@ -93,6 +47,16 @@ You must install the following plugin/libraries.
   https://github.com/tyru/open-browser.vim
 * git command in your PATH
 
+}}}
+==============================================================================
+GITHUB ENTERPRISE SETTING			*openbrowser-github-enterprise* {{{
+
+Like the hub command(https://github.com/defunkt/hub), by setting 'hub.host', you can open a GitHub Enterprise repository page.
+
+You can set 'hub.host' by executing the command below. Make sure you execute it in the git repository.
+>
+	$ git config --local hub.host my.git.org
+<
 }}}
 ==============================================================================
 INTERFACE				*openbrowser-github-interface* {{{
@@ -134,6 +98,50 @@ g:openbrowser_github_always_use_commit_hash
 }}}
 ------------------------------------------------------------------------------
 COMMANDS					*openbrowser-github-commands* {{{
+
+:OpenGithubFile					*:OpenGithubFile*
+---------------
+
+Opens a specific file in github.com repository(it also opens in the current branch by default).
+>
+	" Opens current files URL in github.com
+	:OpenGithubFile
+	" Opens current files highlighted place in github.com 
+	:'<,'>OpenGithubFile
+	" Opens a specific file in github.com
+	:OpenGithubFile PATH/TO/FILE
+<
+
+							*:OpenGithubIssue*
+:OpenGithubIssue
+:OpenGithubIssue {number} [{repos}]
+:OpenGithubIssue {repos}
+----------------
+
+Opens a specific Issue.
+>
+	" Opens current repositories Issue #1
+	:OpenGithubIssue 1
+	" Opens a specific repositories Issue #1
+	:OpenGithubIssue 1 tyru/open-browser.vim
+	" Opens current repositories Issue List
+	:OpenGithubIssue
+	" Opens a specific repositories Issue list
+	:OpenGithubIssue tyru/open-browser.vim
+<
+
+							*:OpenGithubPullReq*
+:OpenGithubPullReq
+:OpenGithubPullReq {number} [{repos}]
+:OpenGithubPullReq {repos}
+------------------
+
+The third command is |:OpenGithubPullReq|.
+It opens '/pulls' page when it has no argument.
+Otherwise, it does entirely the same thing as |:OpenGithubIssue|
+since GitHub redirects '/issues/1' to '/pull/1'
+if #1 is a Pull Request.
+
 }}}
 }}}
 ==============================================================================
