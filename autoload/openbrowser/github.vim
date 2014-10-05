@@ -128,19 +128,28 @@ function! s:url_exists(url)
     return status_line =~# '^Status:\s*2'
 endfunction
 
+let s:TYPE_ISSUE = 0
 function! openbrowser#github#issue(args)
     let file = expand('%')
     let gitdir = s:lookup_gitdir(file)
-    call s:call_with_temp_dir(gitdir, 's:cmd_open_url', [a:args, 0])
+    call s:call_with_temp_dir(gitdir, 's:cmd_open_url', [a:args, s:TYPE_ISSUE])
 endfunction
 
+let s:TYPE_PULLREQ = 1
 function! openbrowser#github#pullreq(args)
     let file = expand('%')
     let gitdir = s:lookup_gitdir(file)
-    call s:call_with_temp_dir(gitdir, 's:cmd_open_url', [a:args, 1])
+    call s:call_with_temp_dir(gitdir, 's:cmd_open_url', [a:args, s:TYPE_PULLREQ])
 endfunction
 
-" Opens a specific Issue/Pullreq.
+let s:TYPE_PROJECT = 2
+function! openbrowser#github#project(args)
+    let file = expand('%')
+    let gitdir = s:lookup_gitdir(file)
+    call s:call_with_temp_dir(gitdir, 's:cmd_open_url', [a:args, s:TYPE_PROJECT])
+endfunction
+
+" Opens a specific Issue/Pullreq/Project.
 "
 " ex)
 " Opens current repositories Issue #1
@@ -151,7 +160,7 @@ endfunction
 "   :OpenGithubIssue
 " Opens a specific repositories Issue List
 "   :OpenGithubIssue tyru/open-browser.vim
-function! s:cmd_open_url(args, pullreq)
+function! s:cmd_open_url(args, type)
     " Both '#1' and '1' are supported.
     let number = matchstr(get(a:args, 0, ''), '^#\?\zs\d\+\ze$')
 
@@ -190,8 +199,23 @@ function! s:cmd_open_url(args, pullreq)
         return
     endif
 
-    let url = 'http://' . github_host . '/' . user . '/' . repos . '/' .
-    \         (a:pullreq && number ==# '' ? 'pulls' : 'issues') . '/' . number
+    let path  = '/' . user . '/' . repos
+    if a:type ==# s:TYPE_ISSUE
+        if number !=# ''
+            let path .= '/issues/' . number
+        else
+            let path .= '/issues'
+        endif
+    elseif a:type ==# s:TYPE_PULLREQ
+        if number !=# ''
+            let path .= '/pull/' . number
+        else
+            let path .= '/pulls'
+        endif
+    else    " if a:type ==# s:TYPE_PROJECT
+        let path .= ''
+    endif
+    let url = 'http://' . github_host . path
     return openbrowser#open(url)
 endfunction
 

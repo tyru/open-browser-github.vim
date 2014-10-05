@@ -48,6 +48,10 @@ command! -bar -nargs=*
 \   OpenGithubPullReq
 \   call openbrowser#github#pullreq([<f-args>])
 
+command! -bar -nargs=*
+\   OpenGithubProject
+\   call openbrowser#github#project([<f-args>])
+
 
 " Restore 'cpoptions' {{{
 let &cpo = s:save_cpo

@@ -158,6 +158,20 @@ Otherwise, it does entirely the same thing as |:OpenGithubIssue|
 since GitHub redirects '/issues/1' to '/pull/1'
 if #1 is a Pull Request.
 
+
+							*:OpenGithubProject*
+:OpenGithubProject [{repos}]
+
+Opens a project page.
+>
+	" Opens current opening file's repository.
+	" ex) https://{hostname}/{user}/{name}
+	:OpenGithubProject
+>
+	" Opens current opening file's repository.
+	" ex) https://{hostname}/tyru/open-browser.vim
+	:OpenGithubProject tyru/open-browser.vim
+
 }}}
 }}}
 ==============================================================================
