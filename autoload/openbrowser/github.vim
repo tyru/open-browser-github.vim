@@ -109,7 +109,8 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum)
 endfunction
 
 function! s:url_exists(url)
-    if !executable('curl')
+    if g:openbrowser_github_url_exists_check ==# 'ignore'
+    \   || !executable('curl')
         return 1
     endif
     let cmdline = 'curl -k -LI "' . a:url . '"'

@@ -34,6 +34,9 @@ endif
 if !exists('g:openbrowser_github_always_use_commit_hash')
     let g:openbrowser_github_always_use_commit_hash = 1
 endif
+if !exists('g:openbrowser_github_url_exists_check')
+    let g:openbrowser_github_url_exists_check = 'yes'
+endif
 
 
 command! -range=0 -bar -nargs=* -complete=file
