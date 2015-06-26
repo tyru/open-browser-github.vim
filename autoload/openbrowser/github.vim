@@ -407,7 +407,7 @@ endfunction
 function! s:echomsg(msg, hl)
     execute 'echohl' a:hl
     try
-        echomsg 'openbrowser/github:' a:msg
+        echomsg '[openbrowser-github]' a:msg
     finally
         echohl None
     endtry
