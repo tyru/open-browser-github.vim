@@ -110,7 +110,15 @@ endfunction
 
 function! s:url_exists(url)
     if g:openbrowser_github_url_exists_check ==# 'ignore'
-    \   || !executable('curl')
+        return 1
+    endif
+    if g:openbrowser_github_url_exists_check ==# 'yes'
+    \   && !executable('curl')
+        call s:warn("You must have 'curl' command to check whether the opening URL exists.")
+        call s:warn("You can suppress this check by writing the following "
+        \         . "config in your vimrc (:help g:openbrowser_github_url_exists_check).")
+        call s:warn("  let g:openbrowser_github_url_exists_check = 'ignore'")
+        call input('Press ENTER to continue...')
         return 1
     endif
     let cmdline = 'curl -k -LI "' . a:url . '"'

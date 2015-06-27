@@ -95,6 +95,16 @@ g:openbrowser_github_always_use_commit_hash
 	with a current branch's latest file.
 	ex) https://github.com/tyru/open-browser.vim/blob/master/autoload/openbrowser.vim
 
+					*g:openbrowser_github_url_exists_check*
+g:openbrowser_github_url_exists_check
+							(Default: "yes")
+	This determines the behavior when you
+	push to the non-existent/unauthorized repository.
+	If this variable is "yes", shows prompt to ask you
+	if you really open URL.
+	If this variable is "ignore", any prompts and warning
+	messages aren't showed.
+
 }}}
 ------------------------------------------------------------------------------
 COMMANDS					*openbrowser-github-commands* {{{
