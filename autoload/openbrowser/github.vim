@@ -98,7 +98,7 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum)
         return
     endif
 
-    let url = 'http://' . github_host . '/' . user . '/' . repos . '/blob/' . branch . '/' . relpath . lnum
+    let url = 'https://' . github_host . '/' . user . '/' . repos . '/blob/' . branch . '/' . relpath . lnum
     if !s:url_exists(url) && input(
     \   "Maybe you are opening a URL which is not git-push'ed yet. OK?[y/n]: "
     \) !~? '^\%[YES]$'
@@ -224,7 +224,7 @@ function! s:cmd_open_url(args, type)
     else    " if a:type ==# s:TYPE_PROJECT
         let path .= ''
     endif
-    let url = 'http://' . github_host . path
+    let url = 'https://' . github_host . path
     return openbrowser#open(url)
 endfunction
 
@@ -306,7 +306,7 @@ function! s:detect_github_repos_from_git_remote(github_host)
         return github_urls[0]
     else
         " Prompt which GitHub URL.
-        let GITHUB_URL_FORMAT = 'http://%s/%s/%s'
+        let GITHUB_URL_FORMAT = 'https://%s/%s/%s'
         let list = ['Which GitHub repository?']
         for i in range(len(github_urls))
             let url = printf(GITHUB_URL_FORMAT,
