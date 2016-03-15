@@ -42,20 +42,7 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum)
         return
     endif
 
-    let github_host = s:get_github_host()
-
-    " May prompt user to choose which repos is used.
-    try
-        let github_repos =
-        \   s:detect_github_repos_from_git_remote(github_host)
-    catch /^INVALID INDEX$/
-        call s:error('canceled or invalid GitHub URL was selected.')
-        return
-    endtry
-
-    let user        = get(github_repos, 'user', '')
-    let repos       = get(github_repos, 'repos', '')
-    let relpath     = s:get_repos_relpath(file)
+    let relpath = s:get_repos_relpath(file)
 
     if g:openbrowser_github_always_used_branch !=# ''
         let branch = g:openbrowser_github_always_used_branch
@@ -81,14 +68,6 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum)
     endif
 
     " Check input values.
-    if user ==# ''
-        call s:error('Could not detect repos user.')
-        return
-    endif
-    if repos ==# ''
-        call s:error('Could not detect current repos name on github.')
-        return
-    endif
     if branch ==# ''
         call s:error('Could not detect current branch name.')
         return
@@ -98,7 +77,35 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum)
         return
     endif
 
-    let url = 'https://' . github_host . '/' . user . '/' . repos . '/blob/' . branch . '/' . relpath . lnum
+    let path = 'blob/' . branch . '/' . relpath . lnum
+
+    if executable('hub')
+        let url = s:hub('browse', '-u', '--', path)
+    else
+        let github_host = s:get_github_host()
+
+        " May prompt user to choose which repos is used.
+        try
+            let github_repos =
+            \   s:detect_github_repos_from_git_remote(github_host)
+        catch /^INVALID INDEX$/
+            call s:error('canceled or invalid GitHub URL was selected.')
+            return
+        endtry
+
+        let user  = get(github_repos, 'user', '')
+        let repos = get(github_repos, 'repos', '')
+        if user ==# ''
+            call s:error('Could not detect repos user.')
+            return
+        endif
+        if repos ==# ''
+            call s:error('Could not detect current repos name on github.')
+            return
+        endif
+
+        let url = 'https://' . github_host . '/' . user . '/' . repos . '/' . path
+    endif
     if !s:url_exists(url) && input(
     \   "Maybe you are opening a URL which is not git-push'ed yet. OK?[y/n]: "
     \) !~? '^\%[YES]$'
@@ -173,58 +180,62 @@ function! s:cmd_open_url(args, type)
     " Both '#1' and '1' are supported.
     let number = matchstr(get(a:args, 0, ''), '^#\?\zs\d\+\ze$')
 
-    let github_host = s:get_github_host()
-
-    " If the issue number is omitted, the index of argument of repository will
-    " become 0 (a:args[0]), otherwise 1 (a:args[1])
-    let repos_arg_index = number == '' ? 0 : 1
-
-    " If the argument of repository was given and valid format,
-    " set user and repos.
-    let mlist = matchlist(get(a:args, repos_arg_index, ''),
-    \                     '^\([^/]\+\)/\([^/]\+\)$')
-    if !empty(mlist)
-        let user  = mlist[1]
-        let repos = mlist[2]
-    else
-        try
-            let github_repos =
-            \   s:detect_github_repos_from_git_remote(github_host)
-        catch /^INVALID INDEX$/
-            call s:error('canceled or invalid GitHub URL was selected.')
-            return
-        endtry
-        let user  = get(github_repos, 'user', '')
-        let repos = get(github_repos, 'repos', '')
-    endif
-
-    " Check input values.
-    if user ==# ''
-        call s:error('Could not detect repos user.')
-        return
-    endif
-    if repos ==# ''
-        call s:error('Could not detect current repos name on github.')
-        return
-    endif
-
-    let path  = '/' . user . '/' . repos
     if a:type ==# s:TYPE_ISSUE
         if number !=# ''
-            let path .= '/issues/' . number
+            let path = 'issues/' . number
         else
-            let path .= '/issues'
+            let path = 'issues'
         endif
     elseif a:type ==# s:TYPE_PULLREQ
         if number !=# ''
-            let path .= '/pull/' . number
+            let path = 'pull/' . number
         else
-            let path .= '/pulls'
+            let path = 'pulls'
         endif
     else    " if a:type ==# s:TYPE_PROJECT
-        let path .= ''
+        let path = ''
     endif
-    let url = 'https://' . github_host . path
+
+    if executable('hub')
+        let url = s:hub('browse', '-u', '--', path)
+    else
+
+        let github_host = s:get_github_host()
+
+        " If the issue number is omitted, the index of argument of repository will
+        " become 0 (a:args[0]), otherwise 1 (a:args[1])
+        let repos_arg_index = number == '' ? 0 : 1
+
+        " If the argument of repository was given and valid format,
+        " set user and repos.
+        let mlist = matchlist(get(a:args, repos_arg_index, ''),
+        \                     '^\([^/]\+\)/\([^/]\+\)$')
+        if !empty(mlist)
+            let user  = mlist[1]
+            let repos = mlist[2]
+        else
+            try
+                let github_repos =
+                \   s:detect_github_repos_from_git_remote(github_host)
+            catch /^INVALID INDEX$/
+                call s:error('canceled or invalid GitHub URL was selected.')
+                return
+            endtry
+            let user  = get(github_repos, 'user', '')
+            let repos = get(github_repos, 'repos', '')
+        endif
+
+        " Check input values.
+        if user ==# ''
+            call s:error('Could not detect repos user.')
+            return
+        endif
+        if repos ==# ''
+            call s:error('Could not detect current repos name on github.')
+            return
+        endif
+        let url = 'https://' . github_host . '/' . user . '/' . repos . '/' . path
+    endif
     return openbrowser#open(url)
 endfunction
 
@@ -387,9 +398,17 @@ if g:openbrowser_use_vimproc
     function! s:git(...)
         return s:trim(vimproc#system(['git'] + a:000))
     endfunction
+
+    function! s:hub(...)
+        return s:trim(vimproc#system(['hub'] + a:000))
+    endfunction
 else
     function! s:git(...)
         return s:trim(system(join(['git'] + a:000, ' ')))
+    endfunction
+
+    function! s:hub(...)
+        return s:trim(system(join(['hub'] + a:000, ' ')))
     endfunction
 endif
 
