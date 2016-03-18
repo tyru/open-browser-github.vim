@@ -50,7 +50,7 @@ The third command is `:OpenGithubPullReq`.  It opens `/pulls` page when it has n
 
 ## GitHub Enterprise setting
 
-Like the [hub command](https://github.com/defunkt/hub), by setting `hub.host`, you can open a GitHub Enterprise repository page.
+Like the [hub command](https://github.com/github/hub), by setting `hub.host`, you can open a GitHub Enterprise repository page.
 
 You can set `hub.host` by executing the command below. Make sure you execute it in the git repository.
 
