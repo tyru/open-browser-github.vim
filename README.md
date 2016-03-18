@@ -50,8 +50,25 @@ The third command is `:OpenGithubPullReq`.  It opens `/pulls` page when it has n
 
 ## GitHub Enterprise setting
 
-Like the [hub command](https://github.com/github/hub), by setting `hub.host`, you can open a GitHub Enterprise repository page.
+1. Get entire URL from "hub" command.
 
-You can set `hub.host` by executing the command below. Make sure you execute it in the git repository.
+If you installed "hub" command, |openbrowser-github| will execute the
+following command:
+
+`hub browse -u -- {path}`
+
+And will open a returned (output) URL.
+
+2\. Get each part from "git config --get hub.xxx" output
+
+* hub.protocol (TODO)
+* hub.host
+
+Like the [hub command](https://github.com/github/hub),
+by setting above keys / values in gitconfig,
+you can open a GitHub Enterprise repository page.
+
+For example, you can set 'hub.host' by executing the command below.
+Make sure you execute it in the git repository.
 
 `$ git config --local hub.host my.git.org`
