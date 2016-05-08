@@ -96,7 +96,7 @@ g:openbrowser_github_always_used_branch
 
 					*g:openbrowser_github_always_use_commit_hash*
 g:openbrowser_github_always_use_commit_hash
-							(Default: 0)
+							(Default: 1)
 	If this variable is non-zero value,
 	|openbrowser-github| always opens a URL
 	with a current commit hash.
