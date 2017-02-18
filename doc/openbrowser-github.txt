@@ -1,4 +1,4 @@
-*openbrowser-github* *openbrowser-github.txt* Launch GitHub quickly from Vim
+*openbrowser-github* Launch GitHub quickly from Vim
 
 Author:
   tyru <tyru.exe@gmail.com>
