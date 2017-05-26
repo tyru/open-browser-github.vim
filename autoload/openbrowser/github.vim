@@ -182,7 +182,7 @@ function! s:cmd_open_url(args, type)
 
     " If the issue number is omitted, the index of argument of repository will
     " become 0 (a:args[0]), otherwise 1 (a:args[1])
-    let repos_arg_index = number == '' ? 0 : 1
+    let repos_arg_index = number ==# '' ? 0 : 1
 
     if a:type ==# s:TYPE_ISSUE
         if number ==# ''
@@ -278,7 +278,7 @@ function! s:issue_number_under_cursor(line, col)
         return ''
     endif
 
-    " Emit first '#'
+    " Omit '#' prefix
     return number[1:]
 endfunction
 
