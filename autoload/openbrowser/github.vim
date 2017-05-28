@@ -204,7 +204,7 @@ function! s:cmd_open_url(args, type)
 
         " If the issue number is omitted, the index of argument of repository will
         " become 0 (a:args[0]), otherwise 1 (a:args[1])
-        let repos_arg_index = number == '' ? 0 : 1
+        let repos_arg_index = number ==# '' ? 0 : 1
 
         " If the argument of repository was given and valid format,
         " set user and repos.
