@@ -153,8 +153,7 @@ Opens a specific file in github.com repository(it also opens in the current bran
 :OpenGithubIssue {repos}
 ----------------
 
-Opens a specific Issue. If the cursor is on "#{number}" format number, it
-opens the specific issue page.
+Opens a specific Issue.
 >
 	" Opens current repositories Issue #1
 	" ex) https://{hostname}/{user}/{repos}/issues/1
@@ -179,8 +178,7 @@ opens the specific issue page.
 :OpenGithubPullReq {repos}
 ------------------
 
-Opens '/pulls' page when it has no argument and the cursor is not on
-"#{number}" format number.
+Opens '/pulls' page when it has no argument.
 Otherwise, it does entirely the same thing as |:OpenGithubIssue|
 since GitHub redirects '/issues/1' to '/pull/1'
 if #1 is a Pull Request.

@@ -180,23 +180,13 @@ function! s:cmd_open_url(args, type)
     " Both '#1' and '1' are supported.
     let number = matchstr(get(a:args, 0, ''), '^#\?\zs\d\+\ze$')
 
-    " If the issue number is omitted, the index of argument of repository will
-    " become 0 (a:args[0]), otherwise 1 (a:args[1])
-    let repos_arg_index = number ==# '' ? 0 : 1
-
     if a:type ==# s:TYPE_ISSUE
-        if number ==# ''
-            let number = s:issue_number_under_cursor(getline('.'), col('.'))
-        endif
         if number !=# ''
             let path = 'issues/' . number
         else
             let path = 'issues'
         endif
     elseif a:type ==# s:TYPE_PULLREQ
-        if number ==# ''
-            let number = s:issue_number_under_cursor(getline('.'), col('.'))
-        endif
         if number !=# ''
             let path = 'pull/' . number
         else
@@ -211,6 +201,10 @@ function! s:cmd_open_url(args, type)
     else
 
         let github_host = s:get_github_host()
+
+        " If the issue number is omitted, the index of argument of repository will
+        " become 0 (a:args[0]), otherwise 1 (a:args[1])
+        let repos_arg_index = number == '' ? 0 : 1
 
         " If the argument of repository was given and valid format,
         " set user and repos.
@@ -265,21 +259,6 @@ function! s:call_with_temp_dir(dir, funcname, args)
             execute (haslocaldir ? 'lcd' : 'cd') cwd
         endif
     endtry
-endfunction
-
-function! s:issue_number_under_cursor(line, col)
-    let [number, start, end] = matchstrpos(a:line, '#\d\+')
-    if number ==# ''
-        return ''
-    endif
-
-    let idx = a:col - 1
-    if idx < start || end < idx
-        return ''
-    endif
-
-    " Omit '#' prefix
-    return number[1:]
 endfunction
 
 function! s:parse_github_remote_url(github_host)
