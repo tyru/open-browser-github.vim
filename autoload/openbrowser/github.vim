@@ -18,8 +18,8 @@ endfunction
 
 function! openbrowser#github#file(args, rangegiven, firstlnum, lastlnum) abort
   let file = s:resolve(expand(get(a:args, 0, '%')))
-  let gitdir = s:lookup_gitdir(file)
-  call s:call_with_temp_dir(gitdir, 's:cmd_file', [a:args, a:rangegiven, a:firstlnum, a:lastlnum])
+  let worktree = s:lookup_git_worktree(file)
+  call s:call_with_temp_dir(worktree, 's:cmd_file', [a:args, a:rangegiven, a:firstlnum, a:lastlnum])
 endfunction
 
 " Opens a specific file in github.com repository.
@@ -154,22 +154,22 @@ endfunction
 let s:TYPE_ISSUE = 0
 function! openbrowser#github#issue(args) abort
   let file = expand('%')
-  let gitdir = s:lookup_gitdir(file)
-  call s:call_with_temp_dir(gitdir, 's:cmd_open_url', [a:args, s:TYPE_ISSUE])
+  let worktree = s:lookup_git_worktree(file)
+  call s:call_with_temp_dir(worktree, 's:cmd_open_url', [a:args, s:TYPE_ISSUE])
 endfunction
 
 let s:TYPE_PULLREQ = 1
 function! openbrowser#github#pullreq(args) abort
   let file = expand('%')
-  let gitdir = s:lookup_gitdir(file)
-  call s:call_with_temp_dir(gitdir, 's:cmd_open_url', [a:args, s:TYPE_PULLREQ])
+  let worktree = s:lookup_git_worktree(file)
+  call s:call_with_temp_dir(worktree, 's:cmd_open_url', [a:args, s:TYPE_PULLREQ])
 endfunction
 
 let s:TYPE_PROJECT = 2
 function! openbrowser#github#project(args) abort
   let file = expand('%')
-  let gitdir = s:lookup_gitdir(file)
-  call s:call_with_temp_dir(gitdir, 's:cmd_open_url', [a:args, s:TYPE_PROJECT])
+  let worktree = s:lookup_git_worktree(file)
+  call s:call_with_temp_dir(worktree, 's:cmd_open_url', [a:args, s:TYPE_PROJECT])
 endfunction
 
 " Opens a specific Issue/Pullreq/Project.
@@ -341,32 +341,32 @@ function! s:get_repos_relpath(file) abort
     let dir = dir !=# '' ? dir.'/' : ''
     let relpath = dir.a:file
   else
-    let relpath = s:lookup_relpath_from_gitdir(a:file)
+    let relpath = s:lookup_git_relpath(a:file)
   endif
   let relpath = substitute(relpath, '\', '/', 'g')
   let relpath = substitute(relpath, '/\{2,}', '/', 'g')
   return relpath
 endfunction
 
-function! s:lookup_relpath_from_gitdir(path) abort
+function! s:lookup_git_relpath(path) abort
   return get(s:split_repos_path(a:path), 1, '')
 endfunction
 
-function! s:lookup_gitdir(path) abort
+function! s:lookup_git_worktree(path) abort
   return get(s:split_repos_path(a:path), 0, '')
 endfunction
 
-" Returns [gitdir, relative path] when git dir is found.
+" Returns [git worktree, relative path] when git dir is found.
 " Otherwise, returns empty List.
-function! s:split_repos_path(dir, ...) abort
-  let parent = s:Filepath.dirname(a:dir)
-  let basename = s:Filepath.basename(a:dir)
+function! s:split_repos_path(path, ...) abort
+  let parent = s:Filepath.dirname(a:path)
+  let basename = s:Filepath.basename(a:path)
   let removed_path = a:0 ? a:1 : ''
-  if a:dir ==# parent
-    " a:dir is root directory. not found.
+  if a:path ==# parent
+    " a:path is root directory. not found.
     return []
-  elseif s:is_git_dir(a:dir)
-    return [a:dir, removed_path]
+  elseif s:is_git_worktree(a:path)
+    return [a:path, removed_path]
   else
     if removed_path ==# ''
       let removed_path = basename
@@ -377,10 +377,10 @@ function! s:split_repos_path(dir, ...) abort
   endif
 endfunction
 
-function! s:is_git_dir(dir) abort
+function! s:is_git_worktree(path) abort
   " .git may be a file when its repository is a submodule.
-  let dotgit = s:Filepath.join(a:dir, '.git')
-  return isdirectory(dotgit) || filereadable(dotgit)
+  let gitdir = s:Filepath.join(a:path, '.git')
+  return isdirectory(gitdir) || filereadable(gitdir)
 endfunction
 
 " Enterprise GitHub is supported.
