@@ -50,9 +50,8 @@ This command opens `/pulls` page when it has no argument.  Otherwise, it does en
 
 ### `:OpenGithubProject`
 
-:OpenGithubProject [{repos}]
-
 Opens a project page.
+
 ```vimL
 " Opens current opening file's repository.
 " ex) https://{hostname}/{user}/{name}
