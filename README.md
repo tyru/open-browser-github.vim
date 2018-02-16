@@ -14,7 +14,7 @@ This plugin requires:
 
 ## Usage
 
-There are 3 commands.
+There are 4 commands.
 
 ### `:OpenGithubFile`
 
@@ -46,7 +46,22 @@ Opens a specific Issue.
 
 ### `:OpenGithubPullReq`
 
-The third command is `:OpenGithubPullReq`.  It opens `/pulls` page when it has no argument.  Otherwise, it does entirely the same thing as `:OpenGithubIssue` since GitHub redirects `/issues/1` to `/pull/1` if #1 is a Pull Request.
+This command opens `/pulls` page when it has no argument.  Otherwise, it does entirely the same thing as `:OpenGithubIssue` since GitHub redirects `/issues/1` to `/pull/1` if #1 is a Pull Request.
+
+### `:OpenGithubProject`
+
+:OpenGithubProject [{repos}]
+
+Opens a project page.
+```vimL
+" Opens current opening file's repository.
+" ex) https://{hostname}/{user}/{name}
+:OpenGithubProject
+
+" Opens current opening file's repository.
+" ex) https://{hostname}/tyru/open-browser.vim
+:OpenGithubProject tyru/open-browser.vim
+```
 
 ## GitHub Enterprise setting
 
