@@ -17,7 +17,7 @@ function! openbrowser#github#load() abort
 endfunction
 
 function! openbrowser#github#file(args, rangegiven, firstlnum, lastlnum) abort
-  let file = s:resolve(expand(empty(a:args) ? '%' : a:args[0]))
+  let file = s:resolve(expand(get(a:args, 0, '%')))
   let gitdir = s:lookup_gitdir(file)
   call s:call_with_temp_dir(gitdir, 's:cmd_file', [a:args, a:rangegiven, a:firstlnum, a:lastlnum])
 endfunction
