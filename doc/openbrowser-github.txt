@@ -98,6 +98,7 @@ g:openbrowser_github_url_exists_check
 	if you really open URL.
 	If this variable is "ignore", any prompts and warning
 	messages aren't showed.
+	Otherwise, it is treated as default value ("yes").
 
 }}}
 ------------------------------------------------------------------------------
