@@ -82,12 +82,12 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum) abort
   if executable('hub')
     let url = s:hub('browse', '-u', '--', path)
   else
-    let github_host = s:get_github_host()
+    let host = s:get_github_host()
 
     " May prompt user to choose which repos is used.
     try
       let github_repos =
-      \   s:detect_github_repos_from_git_remote(github_host)
+      \   s:detect_github_repos_from_git_remote(host)
     catch /^INVALID INDEX$/
       call s:error('canceled or invalid GitHub URL was selected.')
       return
@@ -104,7 +104,7 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum) abort
       return
     endif
 
-    let url = 'https://' . github_host . '/' . user . '/' . repos . '/' . path
+    let url = 'https://' . host . '/' . user . '/' . repos . '/' . path
   endif
   if !s:url_exists(url) && input(
   \   "Maybe you are opening a URL which is not git-push'ed yet. OK?[y/n]: "
@@ -384,9 +384,9 @@ function! s:is_git_dir(dir) abort
   return isdirectory(dotgit) || filereadable(dotgit)
 endfunction
 
+" Enterprise GitHub is supported.
+" ('hub' command is using this config key)
 function! s:get_github_host() abort
-  " Enterprise GitHub is supported.
-  " ('hub' command is using this config key)
   let url = s:git('config', '--get', 'hub.host')
   return url !=# '' ? url : 'github.com'
 endfunction
