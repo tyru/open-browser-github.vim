@@ -24,7 +24,11 @@ endfunction
 
 " Opens a specific file in github.com repository.
 function! s:cmd_file(...) abort
-  let path = call('s:parse_cmd_file_args', a:000)
+  let [path, err] = call('s:parse_cmd_file_args', a:000)
+  if err !=# ''
+    call s:error(err)
+    return
+  endif
   if executable('hub')
     let url = s:hub('browse', '-u', '--', path)
   else
@@ -48,11 +52,10 @@ function! s:parse_cmd_file_args(args, rangegiven, firstlnum, lastlnum) abort
   let file = s:resolve(expand(empty(a:args) ? '%' : a:args[0]))
   if !filereadable(file)
     if a:0 is 0
-      call s:error('current buffer is not a file.')
+      return ['', 'current buffer is not a file.']
     else
-      call s:error(printf('''%s'' is not readable.', file))
+      return ['', printf('''%s'' is not readable.', file)]
     endif
-    return
   endif
 
   let relpath = s:get_repos_relpath(file)
@@ -82,16 +85,14 @@ function! s:parse_cmd_file_args(args, rangegiven, firstlnum, lastlnum) abort
 
   " Check input values.
   if branch ==# ''
-    call s:error('Could not detect current branch name.')
-    return
+    return ['', 'Could not detect current branch name.']
   endif
   if relpath ==# ''
-    call s:error('Could not detect relative path of repository.')
-    return
+    return ['', 'Could not detect relative path of repository.']
   endif
 
   let path = 'blob/' . branch . '/' . relpath . lnum
-  return path
+  return [path, '']
 endfunction
 
 function! s:get_url_from_git(path, ...) abort
