@@ -43,13 +43,7 @@ function! s:cmd_file(...) abort
   return openbrowser#open(url)
 endfunction
 
-" ex)
-" Opens current files URL in github.com
-"   :OpenGithubFile
-" Opens current files highlighted place in github.com
-"   :'<,'>OpenGithubFile
-" Opens a specific file in github.com
-"   :OpenGithubFile PATH/TO/FILE
+" * :OpenGithubFile [{path}]
 function! s:parse_cmd_file_args(args, rangegiven, firstlnum, lastlnum) abort
   let file = s:resolve(expand(empty(a:args) ? '%' : a:args[0]))
   if !filereadable(file)
@@ -197,15 +191,13 @@ function! s:cmd_open_url(...) abort
   return openbrowser#open(url)
 endfunction
 
-" ex)
-" Opens current repositories Issue #1
-"   :OpenGithubIssue 1
-" Opens a specific repositories Issue #1
-"   :OpenGithubIssue 1 tyru/open-browser.vim
-" Opens current repositories Issue List
-"   :OpenGithubIssue
-" Opens a specific repositories Issue List
-"   :OpenGithubIssue tyru/open-browser.vim
+" * :OpenGithubIssue
+" * :OpenGithubIssue {number} [{repos}]
+" * :OpenGithubIssue {repos}
+" * :OpenGithubPullReq
+" * :OpenGithubPullReq {number} [{repos}]
+" * :OpenGithubPullReq {repos}
+" * :OpenGithubProject [{repos}]
 function! s:parse_cmd_open_url_args(args, type) abort
   " Both '#1' and '1' are supported.
   let number = matchstr(get(a:args, 0, ''), '^#\?\zs\d\+\ze$')
