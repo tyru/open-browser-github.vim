@@ -13,7 +13,7 @@ set cpo&vim
 " }}}
 
 
-function! s:error(msg)
+function! s:error(msg) abort
   echohl ErrorMsg
   echomsg a:msg
   echohl None
