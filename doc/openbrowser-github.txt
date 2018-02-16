@@ -171,8 +171,8 @@ Additionally, this command supports opening a pull request page by branch name.
 >
 	" Opens current repository's pull request of specified branch name
 	:OpenGithubPullReq #branch_name_of_pull_request
-	" Opens https://github.com/tyru/open-browser-github.vim/pull/24
-	:OpenGithubPullReq #add-license-file tyru/open-browser-github.vim
+	" Opens https://github.com/tyru/open-browser-github.vim/pull/25
+	:OpenGithubPullReq #OpenGithubPullReq-branch-argument tyru/open-browser-github.vim
 <
 
 							*:OpenGithubProject*
