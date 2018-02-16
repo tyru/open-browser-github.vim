@@ -23,7 +23,26 @@ function! openbrowser#github#file(args, rangegiven, firstlnum, lastlnum) abort
 endfunction
 
 " Opens a specific file in github.com repository.
-"
+function! s:cmd_file(...) abort
+  let path = call('s:parse_cmd_file_args', a:000)
+  if executable('hub')
+    let url = s:hub('browse', '-u', '--', path)
+  else
+    let [url, err] = s:get_url_from_git(path)
+    if err !=# ''
+      call s:error(err)
+      return
+    endif
+  endif
+  if !s:url_exists(url) && input(
+  \   "Maybe you are opening a URL which is not git-push'ed yet. OK?[y/n]: "
+  \) !~? '^\%[YES]$'
+    " TODO: Retry
+    return
+  endif
+  return openbrowser#open(url)
+endfunction
+
 " ex)
 " Opens current files URL in github.com
 "   :OpenGithubFile
@@ -31,7 +50,7 @@ endfunction
 "   :'<,'>OpenGithubFile
 " Opens a specific file in github.com
 "   :OpenGithubFile PATH/TO/FILE
-function! s:cmd_file(args, rangegiven, firstlnum, lastlnum) abort
+function! s:parse_cmd_file_args(args, rangegiven, firstlnum, lastlnum) abort
   let file = s:resolve(expand(empty(a:args) ? '%' : a:args[0]))
   if !filereadable(file)
     if a:0 is 0
@@ -78,23 +97,7 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum) abort
   endif
 
   let path = 'blob/' . branch . '/' . relpath . lnum
-
-  if executable('hub')
-    let url = s:hub('browse', '-u', '--', path)
-  else
-    let [url, err] = s:get_url_from_git(path)
-    if err !=# ''
-      call s:error(err)
-      return
-    endif
-  endif
-  if !s:url_exists(url) && input(
-  \   "Maybe you are opening a URL which is not git-push'ed yet. OK?[y/n]: "
-  \) !~? '^\%[YES]$'
-    " TODO: Retry
-    return
-  endif
-  return openbrowser#open(url)
+  return path
 endfunction
 
 function! s:get_url_from_git(path, ...) abort
@@ -176,7 +179,24 @@ function! openbrowser#github#project(args) abort
 endfunction
 
 " Opens a specific Issue/Pullreq/Project.
-"
+function! s:cmd_open_url(...) abort
+  let opt = call('s:parse_cmd_open_url_args', a:000)
+  if executable('hub')
+    let url = s:hub('browse', '-u', '--', opt.path)
+  else
+    if opt.user !=# '' && opt.repos !=# ''
+      let [url, err] = s:get_url_from_git(opt.path, opt.user, opt.repos)
+    else
+      let [url, err] = s:get_url_from_git(opt.path)
+    endif
+    if err !=# ''
+      call s:error(err)
+      return
+    endif
+  endif
+  return openbrowser#open(url)
+endfunction
+
 " ex)
 " Opens current repositories Issue #1
 "   :OpenGithubIssue 1
@@ -186,7 +206,7 @@ endfunction
 "   :OpenGithubIssue
 " Opens a specific repositories Issue List
 "   :OpenGithubIssue tyru/open-browser.vim
-function! s:cmd_open_url(args, type) abort
+function! s:parse_cmd_open_url_args(args, type) abort
   " Both '#1' and '1' are supported.
   let number = matchstr(get(a:args, 0, ''), '^#\?\zs\d\+\ze$')
 
@@ -206,30 +226,19 @@ function! s:cmd_open_url(args, type) abort
     let path = ''
   endif
 
-  if executable('hub')
-    let url = s:hub('browse', '-u', '--', path)
-  else
-    " If the issue number is omitted, the index of argument of repository will
-    " become 0 (a:args[0]), otherwise 1 (a:args[1])
-    let repos_arg_index = number ==# '' ? 0 : 1
+  let repos_arg_index = number ==# '' ? 0 : 1
 
-    " If the argument of repository was given and valid format,
-    " set user and repos.
-    let mlist = matchlist(get(a:args, repos_arg_index, ''),
-    \                     '^\([^/]\+\)/\([^/]\+\)$')
-    if !empty(mlist)
-      let [url, err] = s:get_url_from_git(path, mlist[1], mlist[2])
-    else
-      let [url, err] = s:get_url_from_git(path)
-    endif
-    if err !=# ''
-      call s:error(err)
-      return
-    endif
-  endif
-  return openbrowser#open(url)
+  " If the argument of repository was given and valid format,
+  " get user and repos.
+  let m = matchlist(get(a:args, repos_arg_index, ''),
+  \                     '^\([^/]\+\)/\([^/]\+\)$')
+
+  return {
+  \ 'path': path,
+  \ 'user': !empty(m) ? m[1] : '',
+  \ 'repos': !empty(m) ? m[2] : '',
+  \}
 endfunction
-
 
 
 function! s:call_with_temp_dir(dir, funcname, args) abort
