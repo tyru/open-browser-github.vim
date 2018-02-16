@@ -199,36 +199,43 @@ endfunction
 " * :OpenGithubPullReq {user}/{repos}
 " * :OpenGithubProject [{user}/{repos}]
 function! s:parse_cmd_open_url_args(args, type) abort
-  " Both '#1' and '1' are supported.
-  let number = matchstr(get(a:args, 0, ''), '^#\?\zs\d\+\ze$')
-
   if a:type ==# s:TYPE_ISSUE
-    if number !=# ''
-      let path = 'issues/' . number
+    " ex) '#1', '1'
+    let nr = matchstr(get(a:args, 0, ''), '^#\?\zs\d\+\ze$')
+    if nr !=# ''
+      let path = 'issues/' . nr
     else
       let path = 'issues'
     endif
+    " If the argument of repository was given and valid format, get user and repos.
+    let idx = nr ==# '' ? 0 : 1
+    let m = matchlist(get(a:args, idx, ''),
+    \                     '^\([^/]\+\)/\([^/]\+\)$')
+    let [user, repos] = !empty(m) ? m[1:2] : ['', '']
   elseif a:type ==# s:TYPE_PULLREQ
-    if number !=# ''
-      let path = 'pull/' . number
+    " ex) '#1', '1'
+    let nr = matchstr(get(a:args, 0, ''), '^#\?\zs\d\+\ze$')
+    if nr !=# ''
+      let path = 'pull/' . nr
     else
       let path = 'pulls'
     endif
+    " If the argument of repository was given and valid format, get user and repos.
+    let idx = nr ==# '' ? 0 : 1
+    let m = matchlist(get(a:args, idx, ''),
+    \                     '^\([^/]\+\)/\([^/]\+\)$')
+    let [user, repos] = !empty(m) ? m[1:2] : ['', '']
   else    " if a:type ==# s:TYPE_PROJECT
     let path = ''
+    let m = matchlist(get(a:args, 0, ''),
+    \                     '^\([^/]\+\)/\([^/]\+\)$')
+    let [user, repos] = !empty(m) ? m[1:2] : ['', '']
   endif
-
-  let repos_arg_index = number ==# '' ? 0 : 1
-
-  " If the argument of repository was given and valid format,
-  " get user and repos.
-  let m = matchlist(get(a:args, repos_arg_index, ''),
-  \                     '^\([^/]\+\)/\([^/]\+\)$')
 
   return {
   \ 'path': path,
-  \ 'user': !empty(m) ? m[1] : '',
-  \ 'repos': !empty(m) ? m[2] : '',
+  \ 'user': user,
+  \ 'repos': repos,
   \}
 endfunction
 
