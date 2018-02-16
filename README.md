@@ -64,9 +64,8 @@ And it will open the returned (output) URL.
 ### If you _don't_ have `hub` command
 
 If you don't have `hub` command in your PATH, `openbrowser-github` tries to
-get each part of URL from the following gitconfig keys:
+get each part of URL from the following gitconfig key:
 
-* hub.protocol (TODO)
 * hub.host
 
 You can specify GitHub Enterprise repository URL by setting above keys in
