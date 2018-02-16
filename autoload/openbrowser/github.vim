@@ -200,7 +200,7 @@ function! s:cmd_open_url(args, type) abort
     let url = s:hub('browse', '-u', '--', path)
   else
 
-    let github_host = s:get_github_host()
+    let host = s:get_github_host()
 
     " If the issue number is omitted, the index of argument of repository will
     " become 0 (a:args[0]), otherwise 1 (a:args[1])
@@ -216,7 +216,7 @@ function! s:cmd_open_url(args, type) abort
     else
       try
         let github_repos =
-        \   s:detect_github_repos_from_git_remote(github_host)
+        \   s:detect_github_repos_from_git_remote(host)
       catch /^INVALID INDEX$/
         call s:error('canceled or invalid GitHub URL was selected.')
         return
@@ -234,7 +234,7 @@ function! s:cmd_open_url(args, type) abort
       call s:error('Could not detect current repos name on github.')
       return
     endif
-    let url = 'https://' . github_host . '/' . user . '/' . repos . '/' . path
+    let url = 'https://' . host . '/' . user . '/' . repos . '/' . path
   endif
   return openbrowser#open(url)
 endfunction
