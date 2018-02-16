@@ -192,12 +192,12 @@ function! s:cmd_open_url(...) abort
 endfunction
 
 " * :OpenGithubIssue
-" * :OpenGithubIssue {number} [{repos}]
-" * :OpenGithubIssue {repos}
+" * :OpenGithubIssue [#]{number} [{user}/{repos}]
+" * :OpenGithubIssue {user}/{repos}
 " * :OpenGithubPullReq
-" * :OpenGithubPullReq {number} [{repos}]
-" * :OpenGithubPullReq {repos}
-" * :OpenGithubProject [{repos}]
+" * :OpenGithubPullReq [#]{number} [{user}/{repos}]
+" * :OpenGithubPullReq {user}/{repos}
+" * :OpenGithubProject [{user}/{repos}]
 function! s:parse_cmd_open_url_args(args, type) abort
   " Both '#1' and '1' are supported.
   let number = matchstr(get(a:args, 0, ''), '^#\?\zs\d\+\ze$')
@@ -240,7 +240,7 @@ function! s:call_with_temp_dir(dir, funcname, args) abort
   " when specifying opening repos.
   " e.g.)
   " * :OpenGithubFile path/to/file
-  " * :OpenGithubIssue {number} {user}/{repos}
+  " * :OpenGithubIssue [#]{number} {user}/{repos}
   if a:dir !=# '' && a:dir !=# cwd
     execute 'lcd' a:dir
   endif

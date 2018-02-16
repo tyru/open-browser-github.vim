@@ -132,8 +132,8 @@ Opens a specific file in github.com repository(it also opens in the current bran
 
 							*:OpenGithubIssue*
 :OpenGithubIssue
-:OpenGithubIssue {number} [{repos}]
-:OpenGithubIssue {repos}
+:OpenGithubIssue [#]{number} [{user}/{repos}]
+:OpenGithubIssue {user}/{repos}
 -----------------------------------
 
 Opens a specific Issue.
@@ -157,8 +157,8 @@ Opens a specific Issue.
 
 							*:OpenGithubPullReq*
 :OpenGithubPullReq
-:OpenGithubPullReq {number} [{repos}]
-:OpenGithubPullReq {repos}
+:OpenGithubPullReq [#]{number} [{user}/{repos}]
+:OpenGithubPullReq {user}/{repos}
 -------------------------------------
 
 Opens '/pulls' page when it has no argument.
@@ -168,7 +168,7 @@ if #1 is a Pull Request.
 
 
 							*:OpenGithubProject*
-:OpenGithubProject [{repos}]
+:OpenGithubProject [{user}/{repos}]
 
 Opens a project page.
 >
