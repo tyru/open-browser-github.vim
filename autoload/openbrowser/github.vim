@@ -197,6 +197,7 @@ endfunction
 " * :OpenGithubIssue {user}/{repos}
 " * :OpenGithubPullReq
 " * :OpenGithubPullReq [#]{number} [{user}/{repos}]
+" * :OpenGithubPullReq #{branch} [{user}/{repos}]
 " * :OpenGithubPullReq {user}/{repos}
 " * :OpenGithubProject [{user}/{repos}]
 function! s:parse_cmd_open_url_args(args, type) abort
@@ -214,15 +215,15 @@ function! s:parse_cmd_open_url_args(args, type) abort
     \                     '^\([^/]\+\)/\([^/]\+\)$')
     let [user, repos] = !empty(m) ? m[1:2] : ['', '']
   elseif a:type ==# s:TYPE_PULLREQ
-    " ex) '#1', '1'
-    let nr = matchstr(get(a:args, 0, ''), '^#\?\zs\d\+\ze$')
-    if nr !=# ''
-      let path = 'pull/' . nr
+    " ex) '#1', '1', '#branch_name_of_pull_request'
+    let nr_or_branch = matchstr(get(a:args, 0, ''), '^\%(#\?\zs\d\+\ze\|#\zs.\+\ze\)$')
+    if nr_or_branch !=# ''
+      let path = 'pull/' . nr_or_branch
     else
       let path = 'pulls'
     endif
     " If the argument of repository was given and valid format, get user and repos.
-    let idx = nr ==# '' ? 0 : 1
+    let idx = nr_or_branch ==# '' ? 0 : 1
     let m = matchlist(get(a:args, idx, ''),
     \                     '^\([^/]\+\)/\([^/]\+\)$')
     let [user, repos] = !empty(m) ? m[1:2] : ['', '']
