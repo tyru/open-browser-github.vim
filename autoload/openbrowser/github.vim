@@ -82,29 +82,11 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum) abort
   if executable('hub')
     let url = s:hub('browse', '-u', '--', path)
   else
-    let host = s:get_github_host()
-
-    " May prompt user to choose which repos is used.
-    try
-      let github_repos =
-      \   s:detect_github_repos_from_git_remote(host)
-    catch /^INVALID INDEX$/
-      call s:error('canceled or invalid GitHub URL was selected.')
-      return
-    endtry
-
-    let user  = get(github_repos, 'user', '')
-    let repos = get(github_repos, 'repos', '')
-    if user ==# ''
-      call s:error('Could not detect repos user.')
+    let [url, err] = s:get_url_from_git(path)
+    if err !=# ''
+      call s:error(err)
       return
     endif
-    if repos ==# ''
-      call s:error('Could not detect current repos name on github.')
-      return
-    endif
-
-    let url = 'https://' . host . '/' . user . '/' . repos . '/' . path
   endif
   if !s:url_exists(url) && input(
   \   "Maybe you are opening a URL which is not git-push'ed yet. OK?[y/n]: "
@@ -113,6 +95,34 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum) abort
     return
   endif
   return openbrowser#open(url)
+endfunction
+
+function! s:get_url_from_git(path, ...) abort
+  let host = s:get_github_host()
+
+  if a:0 >= 2
+    let [user, repos] = [a:1, a:2]
+  else
+    " May prompt user to choose which repos is used.
+    try
+      let github_repos =
+      \   s:detect_github_repos_from_git_remote(host)
+    catch /^INVALID INDEX$/
+      return ['', 'canceled or invalid GitHub URL was selected.']
+    endtry
+    let user  = get(github_repos, 'user', '')
+    let repos = get(github_repos, 'repos', '')
+  endif
+
+  if user ==# ''
+    return ['', 'Could not detect repos user.']
+  endif
+  if repos ==# ''
+    return ['', 'Could not detect current repos name on github.']
+  endif
+
+  let url = 'https://' . host . '/' . user . '/' . repos . '/' . a:path
+  return [url, '']
 endfunction
 
 function! s:url_exists(url) abort
@@ -199,9 +209,6 @@ function! s:cmd_open_url(args, type) abort
   if executable('hub')
     let url = s:hub('browse', '-u', '--', path)
   else
-
-    let host = s:get_github_host()
-
     " If the issue number is omitted, the index of argument of repository will
     " become 0 (a:args[0]), otherwise 1 (a:args[1])
     let repos_arg_index = number ==# '' ? 0 : 1
@@ -211,30 +218,14 @@ function! s:cmd_open_url(args, type) abort
     let mlist = matchlist(get(a:args, repos_arg_index, ''),
     \                     '^\([^/]\+\)/\([^/]\+\)$')
     if !empty(mlist)
-      let user  = mlist[1]
-      let repos = mlist[2]
+      let [url, err] = s:get_url_from_git(path, mlist[1], mlist[2])
     else
-      try
-        let github_repos =
-        \   s:detect_github_repos_from_git_remote(host)
-      catch /^INVALID INDEX$/
-        call s:error('canceled or invalid GitHub URL was selected.')
-        return
-      endtry
-      let user  = get(github_repos, 'user', '')
-      let repos = get(github_repos, 'repos', '')
+      let [url, err] = s:get_url_from_git(path)
     endif
-
-    " Check input values.
-    if user ==# ''
-      call s:error('Could not detect repos user.')
+    if err !=# ''
+      call s:error(err)
       return
     endif
-    if repos ==# ''
-      call s:error('Could not detect current repos name on github.')
-      return
-    endif
-    let url = 'https://' . host . '/' . user . '/' . repos . '/' . path
   endif
   return openbrowser#open(url)
 endfunction
