@@ -107,8 +107,8 @@ g:openbrowser_github_url_exists_check
 ------------------------------------------------------------------------------
 COMMANDS					*openbrowser-github-commands* {{{
 
-:OpenGithubFile					*:OpenGithubFile*
----------------
+:OpenGithubFile [{path}]					*:OpenGithubFile*
+------------------------
 
 Opens a specific file in github.com repository(it also opens in the current branch by default).
 >
