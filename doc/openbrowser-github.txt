@@ -158,6 +158,7 @@ Opens a specific Issue.
 							*:OpenGithubPullReq*
 :OpenGithubPullReq
 :OpenGithubPullReq [#]{number} [{user}/{repos}]
+:OpenGithubPullReq #{branch} [{user}/{repos}]
 :OpenGithubPullReq {user}/{repos}
 -------------------------------------
 
@@ -166,6 +167,13 @@ Otherwise, it does entirely the same thing as |:OpenGithubIssue|
 since GitHub redirects '/issues/1' to '/pull/1'
 if #1 is a Pull Request.
 
+Additionally, this command supports opening a pull request page by branch name.
+>
+	" Opens current repository's pull request of specified branch name
+	:OpenGithubPullReq #branch_name_of_pull_request
+	" Opens https://github.com/tyru/open-browser-github.vim/pull/25
+	:OpenGithubPullReq #OpenGithubPullReq-branch-argument tyru/open-browser-github.vim
+<
 
 							*:OpenGithubProject*
 :OpenGithubProject [{user}/{repos}]
