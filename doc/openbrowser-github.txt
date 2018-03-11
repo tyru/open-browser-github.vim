@@ -2,7 +2,7 @@
 
 Author:
   tyru <tyru.exe@gmail.com>
-Version: x.y.z
+Version: 1.0.0
 License: See LICENSE file in this repository
 
 ==============================================================================
@@ -193,7 +193,7 @@ https://github.com/tyru/github.vim/issues
 ==============================================================================
 CHANGELOG						*openbrowser-github-changelog* {{{
 
-0.0.0:
+1.0.0:
 - Initial upload
 
 }}}
