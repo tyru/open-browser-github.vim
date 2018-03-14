@@ -394,7 +394,8 @@ endfunction
 
 
 
-if g:openbrowser_use_vimproc
+" Default value is 1 (use vimproc)
+if get(g:, 'openbrowser_use_vimproc', 1)
 \       && globpath(&rtp, 'autoload/vimproc.vim') !=# ''
   function! s:git(...) abort
     return s:trim(vimproc#system(['git'] + a:000))
