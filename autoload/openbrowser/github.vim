@@ -393,7 +393,7 @@ endfunction
 
 
 
-if g:openbrowser_use_vimproc
+if get(g:, 'openbrowser_use_vimproc', 0)
 \       && globpath(&rtp, 'autoload/vimproc.vim') !=# ''
     function! s:git(...)
         return s:trim(vimproc#system(['git'] + a:000))
