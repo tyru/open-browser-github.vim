@@ -187,6 +187,19 @@ Opens a project page.
 	" Opens current opening file's repository.
 	" ex) https://{hostname}/tyru/open-browser.vim
 	:OpenGithubProject tyru/open-browser.vim
+<
+							*:OpenGithubCommit*
+:OpenGithubCommit {commit hash} [{user}/{repos}]
+
+Opens a commit page.
+>
+	" Opens current repository's commit.
+	" ex) https://{hostname}/{user}/{name}/commit/{hash}
+	:OpenGithubCommit HEAD
+>
+	" Opens speicified repository's commit.
+	" ex) https://{hostname}/vim/vim/commit/b1c9198afb
+	:OpenGithubCommit b1c9198afb vim/vim
 
 }}}
 }}}

@@ -32,7 +32,7 @@ function! s:cmd_file(...) abort
   if executable('hub')
     let url = s:hub('browse', '-u', '--', path)
   else
-    let [url, err] = s:get_url_from_git(path)
+    let [url, err] = s:get_url_from_git({'path': path})
     if err !=# ''
       call s:error(err)
       return
@@ -95,12 +95,13 @@ function! s:parse_cmd_file_args(args, rangegiven, firstlnum, lastlnum) abort
   return [path, '']
 endfunction
 
-function! s:get_url_from_git(path, ...) abort
+function! s:get_url_from_git(repoinfo) abort
   let host = s:get_github_host()
+  let user = get(a:repoinfo, 'user', '')
+  let repos = get(a:repoinfo, 'repos', '')
+  let path = get(a:repoinfo, 'path', '')
 
-  if a:0 >= 2
-    let [user, repos] = [a:1, a:2]
-  else
+  if user ==# '' || repos ==# ''
     " May prompt user to choose which repos is used.
     try
       let github_repos =
@@ -119,7 +120,7 @@ function! s:get_url_from_git(path, ...) abort
     return ['', 'Could not detect current repos name on github.']
   endif
 
-  let url = 'https://' . host . '/' . user . '/' . repos . '/' . a:path
+  let url = 'https://' . host . '/' . user . '/' . repos . '/' . path
   return [url, '']
 endfunction
 
@@ -173,17 +174,25 @@ function! openbrowser#github#project(args) abort
   call s:call_with_temp_dir(worktree, 's:cmd_open_url', [a:args, s:TYPE_PROJECT])
 endfunction
 
+let s:TYPE_COMMIT = 3
+function! openbrowser#github#commit(args) abort
+  let file = expand('%')
+  let worktree = s:lookup_git_worktree(file)
+  call s:call_with_temp_dir(worktree, 's:cmd_open_url', [a:args, s:TYPE_COMMIT])
+endfunction
+
 " Opens a specific Issue/Pullreq/Project.
 function! s:cmd_open_url(...) abort
-  let opt = call('s:parse_cmd_open_url_args', a:000)
+  try
+    let repoinfo = call('s:parse_cmd_open_url_args', a:000)
+  catch
+    call s:error(v:exception)
+    return
+  endtry
   if executable('hub')
-    let url = s:hub('browse', '-u', '--', opt.path)
+    let url = s:hub('browse', '-u', '--', repoinfo.path)
   else
-    if opt.user !=# '' && opt.repos !=# ''
-      let [url, err] = s:get_url_from_git(opt.path, opt.user, opt.repos)
-    else
-      let [url, err] = s:get_url_from_git(opt.path)
-    endif
+    let [url, err] = s:get_url_from_git(repoinfo)
     if err !=# ''
       call s:error(err)
       return
@@ -200,6 +209,7 @@ endfunction
 " * :OpenGithubPullReq #{branch} [{user}/{repos}]
 " * :OpenGithubPullReq {user}/{repos}
 " * :OpenGithubProject [{user}/{repos}]
+" * :OpenGithubCommit {commit hash} [{user}/{repos}]
 function! s:parse_cmd_open_url_args(args, type) abort
   if a:type ==# s:TYPE_ISSUE
     " ex) '#1', '1'
@@ -227,9 +237,22 @@ function! s:parse_cmd_open_url_args(args, type) abort
     let m = matchlist(get(a:args, idx, ''),
     \                     '^\([^/]\+\)/\([^/]\+\)$')
     let [user, repos] = !empty(m) ? m[1:2] : ['', '']
-  else    " if a:type ==# s:TYPE_PROJECT
+  elseif a:type ==# s:TYPE_PROJECT
     let path = ''
     let m = matchlist(get(a:args, 0, ''),
+    \                     '^\([^/]\+\)/\([^/]\+\)$')
+    let [user, repos] = !empty(m) ? m[1:2] : ['', '']
+  else    " if a:type ==# s:TYPE_COMMIT
+    if len(a:args) > 1
+      let hash = a:args[0]
+    else
+      let hash = s:git('rev-parse', a:args[0])
+      if v:shell_error
+        throw "'" . a:args[0] .  "' is not valid commit hash"
+      endif
+    endif
+    let path = 'commit/' . hash
+    let m = matchlist(get(a:args, 1, ''),
     \                     '^\([^/]\+\)/\([^/]\+\)$')
     let [user, repos] = !empty(m) ? m[1:2] : ['', '']
   endif

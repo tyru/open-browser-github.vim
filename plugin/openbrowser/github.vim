@@ -55,6 +55,10 @@ command! -bar -nargs=*
 \   OpenGithubProject
 \   call openbrowser#github#project([<f-args>])
 
+command! -bar -nargs=+
+\   OpenGithubCommit
+\   call openbrowser#github#commit([<f-args>])
+
 
 " Restore 'cpoptions' {{{
 let &cpo = s:save_cpo
