@@ -103,6 +103,11 @@ g:openbrowser_github_url_exists_check
 	messages aren't showed.
 	Otherwise, it is treated as default value ("yes").
 
+					*g:openbrowser_github_select_current_line*
+g:openbrowser_github_select_current_line
+							(Default: 0)
+	|:OpenGithubFile| opens a github page that current line is highlighted on.
+
 }}}
 ------------------------------------------------------------------------------
 COMMANDS					*openbrowser-github-commands* {{{
