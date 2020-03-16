@@ -144,14 +144,14 @@ function! s:url_exists(url) abort
     call s:warn('curl returned error code: ' . v:shell_error)
     return 1
   endif
-  let re = '^Status:'
-  let status_line = get(filter(headers, 'v:val =~# re'), 0, '')
+  let re = '^status:'
+  let status_line = get(filter(headers, 'v:val =~? re'), 0, '')
   if status_line ==# ''
     call s:warn(cmdline)
     call s:warn('curl received a response without ''Status'' header.')
     return 1
   endif
-  return status_line =~# '^Status:\s*2'
+  return status_line =~? '^status:\s*2'
 endfunction
 
 let s:TYPE_ISSUE = 0
