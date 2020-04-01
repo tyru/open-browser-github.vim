@@ -40,6 +40,9 @@ endif
 if !exists('g:openbrowser_github_select_current_line')
   let g:openbrowser_github_select_current_line = 0
 endif
+if !exists('g:openbrowser_github_use_hub')
+  let g:openbrowser_github_use_hub = 0
+endif
 
 
 command! -range=0 -bar -nargs=* -complete=file

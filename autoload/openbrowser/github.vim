@@ -30,7 +30,7 @@ function! s:cmd_file(args, rangegiven, firstlnum, lastlnum) abort
     call s:error(err)
     return
   endif
-  if executable('hub')
+  if g:openbrowser_github_use_hub && executable('hub')
     let url = s:hub('browse', '-u', '--', path)
   else
     let [url, err] = s:get_url_from_git({'path': path})
@@ -190,7 +190,7 @@ function! s:cmd_open_url(...) abort
     call s:error(v:exception)
     return
   endtry
-  if executable('hub')
+  if g:openbrowser_github_use_hub && executable('hub')
     let url = s:hub('browse', '-u', '--', repoinfo.path)
   else
     let [url, err] = s:get_url_from_git(repoinfo)
