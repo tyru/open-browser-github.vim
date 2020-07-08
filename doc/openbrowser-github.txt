@@ -107,6 +107,10 @@ g:openbrowser_github_url_exists_check
 g:openbrowser_github_select_current_line
 							(Default: 0)
 	|:OpenGithubFile| opens a github page that current line is highlighted on.
+	If this variable is non-zero, always opens URL with current line fragment
+	(`...#Lxxx`) even the line is not selected in visual-mode.  If this
+	variable is zero (default), it opens URL with current line fragment only
+	when the line is selected in visual-mode.
 
 }}}
 ------------------------------------------------------------------------------

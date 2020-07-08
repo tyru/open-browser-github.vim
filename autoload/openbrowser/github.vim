@@ -24,7 +24,7 @@ endfunction
 
 " Opens a specific file in github.com repository.
 function! s:cmd_file(args, rangegiven, firstlnum, lastlnum) abort
-  let rangegiven = get(g:, 'openbrowser_github_select_current_line', a:rangegiven)
+  let rangegiven = a:rangegiven || get(g:, 'openbrowser_github_select_current_line', 0)
   let [path, err] = s:parse_cmd_file_args(a:args, rangegiven, a:firstlnum, a:lastlnum)
   if err !=# ''
     call s:error(err)
