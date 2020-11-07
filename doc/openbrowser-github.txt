@@ -217,7 +217,7 @@ TODO						*openbrowser-github-todo* {{{
 
 Any requests? ;)
 
-https://github.com/tyru/github.vim/issues
+https://github.com/tyru/open-browser-github.vim/issues
 
 }}}
 ==============================================================================
