@@ -19,7 +19,8 @@ endfunction
 function! openbrowser#github#file(args, rangegiven, firstlnum, lastlnum) abort
   let file = s:resolve(expand(get(a:args, 0, '%')))
   let worktree = s:lookup_git_worktree(file)
-  call s:call_with_temp_dir(worktree, 's:cmd_file', [a:args, a:rangegiven, a:firstlnum, a:lastlnum])
+  let lastlnum = max([a:firstlnum, a:lastlnum]) " a:firstlnum could be bigger in NeoVim
+  call s:call_with_temp_dir(worktree, 's:cmd_file', [a:args, a:rangegiven, a:firstlnum, lastlnum])
 endfunction
 
 " Opens a specific file in github.com repository.
