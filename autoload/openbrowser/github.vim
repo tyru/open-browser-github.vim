@@ -294,14 +294,20 @@ function! s:parse_github_remote_url(github_host) abort
   " - git@github.com:tyru/open-github-browser.vim
   " - ssh://git@github.com/tyru/open-github-browser.vim
   let ssh_re_fmt = 'git@%s[:/]\([^/]\+\)/\([^/]\+\)\s'
+  let ssh2_re_fmt = '\s%s[:/]\([^/]\+\)/\([^/]\+\)\s'
+  let ssh3_re_fmt = 'ssh://%s/\([^/]\+\)/\([^/]\+\)\s'
   let git_re_fmt = 'git://%s/\([^/]\+\)/\([^/]\+\)\s'
   let https_re_fmt = 'https\?://%s/\([^/]\+\)/\([^/]\+\)\s'
 
   let ssh_re = printf(ssh_re_fmt, host_re)
+  let ssh2_re = printf(ssh2_re_fmt, host_re)
+  let ssh3_re = printf(ssh3_re_fmt, host_re)
   let git_re = printf(git_re_fmt, host_re)
   let https_re = printf(https_re_fmt, host_re)
 
   let gh_ssh_re = printf(ssh_re_fmt, gh_host_re)
+  let gh_ssh2_re = printf(ssh2_re_fmt, gh_host_re)
+  let gh_ssh3_re = printf(ssh3_re_fmt, gh_host_re)
   let gh_git_re = printf(git_re_fmt, gh_host_re)
   let gh_https_re = printf(https_re_fmt, gh_host_re)
 
@@ -309,9 +315,9 @@ function! s:parse_github_remote_url(github_host) abort
   for line in s:git_lines('remote', '-v')
     " Even if host is not 'github.com',
     " parse also 'github.com'.
-    for re in [ssh_re, git_re, https_re] +
+    for re in [ssh_re, ssh2_re, ssh3_re, git_re, https_re] +
     \   (a:github_host !=# 'github.com' ?
-    \       [gh_ssh_re, gh_git_re, gh_https_re] : [])
+    \       [gh_ssh_re, gh_ssh2_re, gh_ssh3_re, gh_git_re, gh_https_re] : [])
       let m = matchlist(line, re)
       if !empty(m)
         call add(matched, {
