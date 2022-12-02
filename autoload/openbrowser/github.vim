@@ -65,7 +65,11 @@ function! s:parse_cmd_file_args(args, rangegiven, firstlnum, lastlnum) abort
   if g:openbrowser_github_always_used_branch !=# ''
     let branch = g:openbrowser_github_always_used_branch
   elseif g:openbrowser_github_always_use_commit_hash
-    let branch = s:git('rev-parse', 'HEAD')
+    if g:openbrowser_github_always_use_upstream_commit_hash
+      let branch = s:git('rev-parse', 'HEAD@{upstream}')
+    else
+      let branch = s:git('rev-parse', 'HEAD')
+    endif
   else
     " When working tree is detached state,
     " branch becomes commit hash.

@@ -92,6 +92,14 @@ g:openbrowser_github_always_use_commit_hash
 	with a current branch's latest file.
 	ex) https://github.com/tyru/open-browser.vim/blob/master/autoload/openbrowser.vim
 
+					*g:openbrowser_github_always_use_upstream_commit_hash*
+g:openbrowser_github_always_use_upstream_commit_hash
+							(Default: 0)
+	If this variable is non-zero value, |openbrowser-github| always opens a
+    URL with a current upstream commit hash. This is useful if you usually have
+    local commits which are not yet pushed, and most of the upstream and local
+    code is unchanged.
+
 					*g:openbrowser_github_url_exists_check*
 g:openbrowser_github_url_exists_check
 							(Default: "yes")
